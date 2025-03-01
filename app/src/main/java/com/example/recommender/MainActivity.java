@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonHandler(View view) {
         TextView tex = findViewById(R.id.textView);
-        String str = "Matia SUCKS!";
+        String str = "Isaac SUCKS!";
         tex.setText(str);
     }
 }
