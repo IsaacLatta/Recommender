@@ -1,0 +1,24 @@
+# Build outputs
+/build/
+/out/
+
+# Local settings
+/local.properties
+/.idea/
+/*.iml
+
+# User-specific Gradle caches & logs
+.gradle
+/.gradle/
+
+# Debug/release APKs
+*.apk
+*.aab
+
+# Keystore files (security risk!)
+*.keystore
+*.jks
+
+# Miscellaneous OS files
+.DS_Store
+Thumbs.db
