@@ -5,8 +5,8 @@ App/out/
 # Local settings
 App/local.properties
 App/gradle.properties
-App/.idea/
-App/*.iml
+.idea/
+*.iml
 
 # User-specific Gradle caches & logs
 App/gradle

@@ -1,6 +1,7 @@
 package com.example.recommender;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,5 +31,9 @@ public class MainActivity extends AppCompatActivity {
         TextView tex = findViewById(R.id.textView);
         String str = "MATIA INFINITY SUCKS HUOAAH";
         tex.setText(str);
+        String apiKey = BuildConfig.API_KEY;
+        String apiStage = BuildConfig.API_STAGE;
+        Log.d("API_DEBUG", "API Key: " + apiKey);
+        Log.d("API_DEBUG", "API Stage: " + apiStage);
     }
 }

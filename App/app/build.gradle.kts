@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+val apiKey: String = project.findProperty("API_KEY") as? String ?: ""
+val apiStage: String = project.findProperty("API_STAGE") as? String ?: ""
+
 android {
     namespace = "com.example.recommender"
     compileSdk = 35
@@ -14,8 +17,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "API_KEY", apiKey)
+        buildConfigField("String", "API_STAGE", apiStage)
     }
-
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
