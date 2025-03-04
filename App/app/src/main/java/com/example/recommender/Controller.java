@@ -36,12 +36,12 @@ public class Controller extends ViewModel {
                     JSONObject jsonResponse = new JSONObject(responseData);
                     boolean success = jsonResponse.getBoolean("success");
                     if (success) {
-//                        String userId = jsonResponse.getString("userId");
+                        String user_id = jsonResponse.getString("user_id");
                         String userName = jsonResponse.getString("username");
 
-//                        Store.getInstance().setUserId(userId);
+                        Store.getInstance().setUserId(user_id);
                         Store.getInstance().setUsername(userName);
-                        Log.d("LOGIN_SUCCESS", "User logged in: " + userName);
+                        Log.d("LOGIN_SUCCESS", "User logged in: " + userName +" " + user_id);
                     } else {
                         Log.e("LOGIN_FAILED", "Invalid credentials");
                     }

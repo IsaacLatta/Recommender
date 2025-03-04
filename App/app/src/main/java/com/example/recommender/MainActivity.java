@@ -31,6 +31,6 @@ public class MainActivity extends AppCompatActivity {
     public void buttonHandler(View view) {
         TextView tex = findViewById(R.id.textView);
         tex.setText("Initiating Login");
-        controller.login("testuser", "password123");
+        controller.login("alice", "password123");
     }
 }
