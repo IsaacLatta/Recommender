@@ -10,6 +10,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
 public class MainActivity extends AppCompatActivity {
     Controller controller;
 
@@ -29,8 +32,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonHandler(View view) {
-        TextView tex = findViewById(R.id.textView);
-        tex.setText("Initiating Login");
-        controller.login("alice", "password123");
+        TextInputEditText usr = findViewById(R.id.userName_text);
+        TextInputEditText pass = findViewById(R.id.password_text);
+        String username_string = usr.getText().toString();
+        String password_string = pass.getText().toString();
+        controller.login(username_string, password_string);
     }
 }
