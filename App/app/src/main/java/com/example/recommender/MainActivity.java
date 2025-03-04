@@ -1,7 +1,6 @@
 package com.example.recommender;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -11,15 +10,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.w3c.dom.Text;
-
 public class MainActivity extends AppCompatActivity {
+    Controller controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        this.controller = new Controller(new API(BuildConfig.API_KEY, BuildConfig.API_STAGE), new API());
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -31,9 +32,8 @@ public class MainActivity extends AppCompatActivity {
         TextView tex = findViewById(R.id.textView);
         String str = "MATIA INFINITY SUCKS HUOAAH";
         tex.setText(str);
-        String apiKey = BuildConfig.API_KEY;
-        String apiStage = BuildConfig.API_STAGE;
-        Log.d("API_DEBUG", "API Key: " + apiKey);
-        Log.d("API_DEBUG", "API Stage: " + apiStage);
+        if(!controller.login("", "")) {
+            // display an error message
+        }
     }
 }
