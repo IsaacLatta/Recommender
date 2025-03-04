@@ -79,7 +79,7 @@ INSERT INTO books (external_id, title, author, preview_url) VALUES
 ('GB_444DDD', 'The Name of the Wind', 'Patrick Rothfuss', 'https://books.google.com/nameofthewind');
 
 -- ============================
--- 6) READING LIST
+-- READING LIST
 -- ============================
 -- Each row ties a group to a book, with who suggested it, and a status ('pending' or 'approved').
 INSERT INTO reading_list (group_id, book_id, suggested_by, status) VALUES
