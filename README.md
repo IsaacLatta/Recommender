@@ -2,8 +2,4 @@
 
 ## Deliverable 1
 
-- App Title: **Inked**
-
-- We include the requirements, objectives and constraints in the report
-- The meeting minutes and results from the brainstorming session can be found in the Meeting section of the report under Meeting 1
-- Within Meeting 1's meeting minutes is our basic overview of how we will implement the project 
+- Checkout the Deliverable_1 branch to see the project state at Deliverable 1.
