@@ -14,7 +14,7 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    return jsonify({"message": "Login endpoint reached", "username": username, "password": password}), 200
+    return jsonify({"message": "Login endpoint reached", "username": username, "password": password, "success": True}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5022)
