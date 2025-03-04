@@ -4,63 +4,56 @@ import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
 
-import okhttp3.*;
+import com.example.recommender.data.network.AuthService;
+
+import okhttp3.OkHttpClient;
+
 import org.json.JSONObject;
-import java.io.IOException;
 
 public class Controller extends ViewModel {
-    private final OkHttpClient client = new OkHttpClient();
+    private AuthService authService;
     private API bookAPI;
     private API databaseAPI;
+
     public Controller(API databaseAPI, API bookAPI) {
         this.databaseAPI = databaseAPI;
         this.bookAPI = bookAPI;
         Log.d("DEBUG", "Controller created");
-        Log.d("DEBUG", String.format("API ENDPOINT: %s, KEY: %s", databaseAPI.getEndpoint(), databaseAPI.getKey()));
-        Log.d("DEBUG", String.format("API ENDPOINT: %s, KEY: %s", bookAPI.getEndpoint(), bookAPI.getKey()));
+        Log.d("DEBUG", String.format("Database API ENDPOINT: %s, KEY: %s",
+                databaseAPI.getEndpoint(), databaseAPI.getKey()));
+        Log.d("DEBUG", String.format("Book API ENDPOINT: %s, KEY: %s",
+                bookAPI.getEndpoint(), bookAPI.getKey()));
+
+        OkHttpClient client = new OkHttpClient();
+        authService = new AuthService(databaseAPI, client);
     }
 
-    public Boolean login(String username, String password) {
-        try {
-            String url = databaseAPI.getEndpoint() + "/login";
+    public void login(String username, String password) {
+        authService.login(username, password, new AuthService.AuthCallback() {
+            @Override
+            public void onSuccess(String responseData) {
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseData);
+                    boolean success = jsonResponse.getBoolean("success");
+                    if (success) {
+//                        String userId = jsonResponse.getString("userId");
+                        String userName = jsonResponse.getString("username");
 
-            JSONObject jsonBody = new JSONObject();
-            jsonBody.put("username", username);
-            jsonBody.put("password", password);
-
-            Log.d("LOGIN_INFO", "Sending login request to: " + url);
-            RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.get("application/json; charset=utf-8"));
-            Log.d("LOGIN_INFO", "Sending JSON body: " + jsonBody.toString());
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("x-api-key", databaseAPI.getKey())
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("LOGIN_ERROR", "Failed to connect to API", e);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (!response.isSuccessful()) {
-                        Log.e("LOGIN_ERROR", "Response failed: " + response.code());
-                        return;
+//                        Store.getInstance().setUserId(userId);
+                        Store.getInstance().setUsername(userName);
+                        Log.d("LOGIN_SUCCESS", "User logged in: " + userName);
+                    } else {
+                        Log.e("LOGIN_FAILED", "Invalid credentials");
                     }
-
-                    String responseData = response.body().string();
-                    Log.d("LOGIN_SUCCESS", "Response: " + responseData);
+                } catch (Exception e) {
+                    Log.e("LOGIN_ERROR", "Error parsing login response", e);
                 }
-            });
-        }
-        catch (Exception e) {
-            Log.e("LOGIN_ERROR", "JSON creation failed", e);
-            return false;
-        }
-        return true;
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("LOGIN_ERROR", "Login failed", e);
+            }
+        });
     }
 }

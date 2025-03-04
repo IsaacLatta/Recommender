@@ -1,15 +1,29 @@
 package com.example.recommender;
 
-/* com.example.recommender.Store holds all the data for the users application */
 public class Store {
     private static Store instance;
-    private String ID;
+    private String userId;
     private String username;
 
     private Store() {}
 
+    public static synchronized Store getInstance() {
+        if (instance == null) {
+            instance = new Store();
+        }
+        return instance;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
     public String getUsername() {
         return username;
     }
-
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }

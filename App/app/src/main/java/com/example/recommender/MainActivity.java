@@ -30,10 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void buttonHandler(View view) {
         TextView tex = findViewById(R.id.textView);
-        String str = "MATIA INFINITY SUCKS HUOAAH";
-        tex.setText(str);
-        if(!controller.login("", "")) {
-            // display an error message
-        }
+        tex.setText("Initiating Login");
+        controller.login("testuser", "password123");
     }
 }
