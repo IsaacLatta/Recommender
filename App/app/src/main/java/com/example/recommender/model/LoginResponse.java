@@ -1,4 +1,4 @@
-package com.example.recommender.data.model;
+package com.example.recommender.model;
 
 public class LoginResponse {
     private boolean success;

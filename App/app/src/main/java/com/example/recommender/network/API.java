@@ -1,4 +1,4 @@
-package com.example.recommender;
+package com.example.recommender.network;
 
 public class API {
     private String key;

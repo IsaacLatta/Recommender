@@ -1,4 +1,4 @@
-package com.example.recommender;
+package com.example.recommender.model;
 
 public class Store {
     private static Store instance;

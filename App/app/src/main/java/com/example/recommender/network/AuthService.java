@@ -1,10 +1,7 @@
-package com.example.recommender.data.network;
+package com.example.recommender.network;
 
-import android.util.Log;
-
-import com.example.recommender.API;
-import com.example.recommender.data.model.LoginRequest;
-import com.example.recommender.data.model.LoginResponse;
+import com.example.recommender.model.LoginRequest;
+import com.example.recommender.model.LoginResponse;
 
 import retrofit2.Call;
 import retrofit2.Callback;
