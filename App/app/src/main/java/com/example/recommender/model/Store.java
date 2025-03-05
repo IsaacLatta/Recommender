@@ -4,6 +4,7 @@ public class Store {
     private static Store instance;
     private String userId;
     private String username;
+    private String token;
 
     private Store() {
         userId = "";
@@ -28,4 +29,6 @@ public class Store {
     public void setUsername(String username) {
         this.username = username;
     }
+    public String getToken() {return token;}
+    public void setToken(String token) {this.token = token;}
 }

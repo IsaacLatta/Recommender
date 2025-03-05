@@ -1,4 +1,3 @@
-// File: BookService.java
 package com.example.recommender.network;
 
 import com.example.recommender.model.BookResponse;
@@ -15,14 +14,15 @@ public class BookService {
     public BookService(API api) {
         this.api = api;
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(api.getEndpoint()) // e.g., "https://your-api-id.execute-api.us-east-2.amazonaws.com/dev/"
+                .baseUrl(api.getEndpoint())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         bookApi = retrofit.create(BookApi.class);
     }
 
-    public void searchBook(String query, final BookCallback callback) {
-        Call<BookResponse> call = bookApi.searchBooks(query, api.getKey());
+    public void searchBook(String jwtToken, String query, final BookCallback callback) {
+        String authHeader = "Bearer " + jwtToken;
+        Call<BookResponse> call = bookApi.searchBooks(authHeader, query, api.getKey());
         call.enqueue(new Callback<BookResponse>() {
             @Override
             public void onResponse(Call<BookResponse> call, Response<BookResponse> response) {

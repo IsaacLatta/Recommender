@@ -1,9 +1,9 @@
-// In Controller.java
+// File: Controller.java
 package com.example.recommender;
 
 import android.util.Log;
 import androidx.lifecycle.ViewModel;
-
+import com.example.recommender.model.Book;
 import com.example.recommender.model.BookResponse;
 import com.example.recommender.model.LoginResponse;
 import com.example.recommender.model.Store;
@@ -13,33 +13,48 @@ import com.example.recommender.network.BookService;
 
 public class Controller extends ViewModel {
     private AuthService authService;
-
     private BookService bookService;
 
     public Controller(AuthService authService) {
         this.authService = authService;
     }
 
+    public Controller(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     public void setBookService(BookService bookService) {
         this.bookService = bookService;
     }
 
-    public void searchBook(String query, final BookService.BookCallback callback) {
+    public void searchBook(String query) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("BOOK_SEARCH", "No JWT token available.");
+            return;
+        }
+
         if (bookService == null) {
             API bookAPI = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
             bookService = new BookService(bookAPI);
         }
-        bookService.searchBook(query, new BookService.BookCallback() {
+
+        bookService.searchBook(token, query, new BookService.BookCallback() {
             @Override
             public void onSuccess(BookResponse response) {
                 Log.d("BOOK_SEARCH", "Found " + response.getTotalItems() + " items.");
-                callback.onSuccess(response);
+                if (response.getItems() != null) {
+                    for (Book book : response.getItems()) {
+                            String title = book.getTitle();
+                            String authors = (book.getAuthors() != null) ? book.getAuthors().toString() : "Unknown";
+                            Log.d("BOOK_SEARCH", "Book: " + title + " | Authors: " + authors);
+                    }
+                }
             }
 
             @Override
             public void onFailure(Exception e) {
                 Log.e("BOOK_SEARCH", "Search failed", e);
-                callback.onFailure(e);
             }
         });
     }
@@ -51,9 +66,12 @@ public class Controller extends ViewModel {
                 if(response.isSuccess()){
                     String userId = response.getUser_id();
                     String userName = response.getUsername();
+                    String token =  response.getToken();
                     Store.getInstance().setUserId(userId);
                     Store.getInstance().setUsername(userName);
+                    Store.getInstance().setToken(token);
                     Log.d("LOGIN_SUCCESS", "User logged in: " + userName + " " + userId);
+                    Log.d("LOGIN_TOKEN", "Token Received: " + token);
                 } else {
                     Log.e("LOGIN_FAILED", "Invalid credentials");
                 }
