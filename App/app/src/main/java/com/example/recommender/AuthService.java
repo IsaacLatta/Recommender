@@ -3,72 +3,50 @@ package com.example.recommender.data.network;
 import android.util.Log;
 
 import com.example.recommender.API;
+import com.example.recommender.data.model.LoginRequest;
+import com.example.recommender.data.model.LoginResponse;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AuthService {
-    private OkHttpClient client;
-    private API api; // This will be your database API (for auth)
+    private AuthApi authApi;
+    private API api;
 
-    public AuthService(API api, OkHttpClient client) {
+    public AuthService(API api) {
         this.api = api;
-        this.client = client;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(api.getEndpoint())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        authApi = retrofit.create(AuthApi.class);
     }
 
     public void login(String username, String password, final AuthCallback callback) {
-        try {
-            String url = api.getEndpoint() + "/login";
-
-            JSONObject jsonBody = new JSONObject();
-            jsonBody.put("username", username);
-            jsonBody.put("password", password);
-
-            RequestBody body = RequestBody.create(jsonBody.toString(),
-                    MediaType.get("application/json; charset=utf-8"));
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("x-api-key", api.getKey())
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("AUTH_SERVICE", "Login request failed", e);
-                    callback.onFailure(e);
+        LoginRequest request = new LoginRequest(username, password);
+        Call<LoginResponse> call = authApi.login(request, api.getKey());
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(new Exception("Login failed with code: " + response.code()));
                 }
+            }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if (!response.isSuccessful()) {
-                        Log.e("AUTH_SERVICE", "Login response not successful: " + response.code());
-                        callback.onFailure(new IOException("Response not successful: " + response.code()));
-                        return;
-                    }
-                    String responseData = response.body().string();
-                    callback.onSuccess(responseData);
-                }
-            });
-        } catch (Exception e) {
-            Log.e("AUTH_SERVICE", "Exception during login", e);
-            callback.onFailure(e);
-        }
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                callback.onFailure(new Exception(t));
+            }
+        });
     }
 
     public interface AuthCallback {
-        void onSuccess(String responseData);
+        void onSuccess(LoginResponse response);
         void onFailure(Exception e);
     }
 }

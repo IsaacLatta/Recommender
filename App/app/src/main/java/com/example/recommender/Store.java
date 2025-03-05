@@ -5,7 +5,9 @@ public class Store {
     private String userId;
     private String username;
 
-    private Store() {}
+    private Store() {
+        userId = "";
+    }
 
     public static synchronized Store getInstance() {
         if (instance == null) {
