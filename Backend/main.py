@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-
-import psycopg2, os, requests
-
+import psycopg2, os, requests, jwt, datetime
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -13,13 +11,16 @@ DB_PASS = os.environ.get("RDS_PASS")
 BOOK_API_KEY = os.environ.get("BOOK_API_KEY")
 BOOK_API_URL = os.environ.get("BOOK_API_URL")
 
+JWT_SECRET = os.environ.get("JWT_SECRET", "default_secret")  
+JWT_ALGORITHM = "HS256"
+JWT_EXP_DELTA_DAYS = 7  
+
 def connect_to_db():
     return psycopg2.connect(host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASS)
 
 def parse_books(data):
     results = []
-    items = data.get("items", [])  
-
+    items = data.get("items", [])
     for item in items:
         volume_info = item.get("volumeInfo", {})
         title = volume_info.get("title", "No Title")
@@ -47,31 +48,49 @@ def parse_books(data):
             "thumbnail": thumbnail,
             "isbn_13": isbn_13
         })
-
+    print("Results Size: ", len(results))
     return results
+
+
+def authenticate(auth_header):
+    return True # For testing purposes
+    if auth_header is None or not auth_header.startswith("Bearer "):
+            return jsonify({"success": False, "error": "Missing or invalid token"}), 401
+    token = auth_header[len("Bearer "):]
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        return False
+    except jwt.InvalidTokenError:
+        return False
+    return True
 
 @app.route('/search_book', methods=['GET'])
 def search_book():
-    try:
-        query = request.args.get("q")
-        if not query:
-            return jsonify({"success": False, "error": "No query parameter provided"}), 400
+    if not authenticate(request.headers.get("Authorization")):
+        return jsonify({"success": False, "error": "Invalid token"}), 401
+    
+    query = request.args.get("q")
+    print("Received query:", query)
+    if not query:
+        return jsonify({"success": False, "error": "No query parameter provided"}), 400
 
-        params = {"q": query, "key": BOOK_API_KEY}
-        response = requests.get(BOOK_API_URL, params=params)
+    params = {"q": query, "key": BOOK_API_KEY}
+    response = requests.get(BOOK_API_URL, params=params)
 
-        if response.status_code != 200:
-            return jsonify({"success": False, "error": "Error from Google Books API", "status": response.status_code}), 500
-
+    if response.status_code != 200:
         return jsonify({
-            "search_term": query,
-            "results": parse_books(response.json()),
-            "success": True
-        }), 200
+            "success": False,
+            "error": "Error from Google Books API",
+            "status": response.status_code
+        }), 500
 
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)}), 500
-
+    book_list = parse_books(response.json())
+    return jsonify({
+        "totalItems": len(book_list),
+        "items": book_list,
+        "success": True
+    }), 200
 
 @app.route('/')
 def home():
@@ -91,9 +110,23 @@ def login():
         row = curs.fetchone()
         if row:
             user_id = row[0]
-            return jsonify({"message": "Login successful", "username": username, "password": password, "user_id": user_id, "success": True}), 200
+            token = jwt.encode({
+                'user_id': user_id,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=JWT_EXP_DELTA_DAYS)
+            }, JWT_SECRET, algorithm=JWT_ALGORITHM)
+            return jsonify({
+                "message": "Login successful",
+                "username": username,
+                "user_id": user_id,
+                "token": token,
+                "success": True
+            }), 200
         else:
-            return jsonify({"message": "Login failed", "username": username, "password": password, "success": False}), 401
+            return jsonify({
+                "message": "Login failed",
+                "username": username,
+                "success": False
+            }), 401
     except Exception as e:
         print("Login error:", e)
         return jsonify({"message": "Server error", "success": False}), 500
