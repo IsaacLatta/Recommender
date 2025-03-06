@@ -25,7 +25,7 @@ public class BackendTest {
 
         CountDownLatch latch = new CountDownLatch(1);
 
-        String username = "alice", password = "password123";
+        String username = "bob", password = "bobpass";
         Log.d("LOGIN_TEST", "Checking valid credentials: " + username + ", " + password);
 
         controller.login(username, password);
