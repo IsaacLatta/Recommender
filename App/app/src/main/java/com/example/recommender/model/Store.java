@@ -1,10 +1,13 @@
 package com.example.recommender.model;
 
+import java.util.List;
+
 public class Store {
     private static Store instance;
     private String userId;
     private String username;
     private String token;
+    private List<Book> searchedBooks;
 
     private Store() {
         userId = "";
@@ -31,4 +34,7 @@ public class Store {
     }
     public String getToken() {return token;}
     public void setToken(String token) {this.token = token;}
+
+    public void setSearchedBooks(List<Book> books) {this.searchedBooks = books;}
+    public List<Book> getSearchedBooks() {return searchedBooks;}
 }

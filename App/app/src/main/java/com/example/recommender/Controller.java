@@ -11,6 +11,8 @@ import com.example.recommender.network.API;
 import com.example.recommender.network.AuthService;
 import com.example.recommender.network.BookService;
 
+import java.util.List;
+
 public class Controller extends ViewModel {
     private AuthService authService;
     private BookService bookService;
@@ -44,14 +46,9 @@ public class Controller extends ViewModel {
             public void onSuccess(BookResponse response) {
                 Log.d("BOOK_SEARCH", "Found " + response.getTotalItems() + " items.");
                 if (response.getItems() != null) {
-                    for (Book book : response.getItems()) {
-                            String title = book.getTitle();
-                            String authors = (book.getAuthors() != null) ? book.getAuthors().toString() : "Unknown";
-                            Log.d("BOOK_SEARCH", "Book: " + title + " | Authors: " + authors);
-                    }
+                    Store.getInstance().setSearchedBooks(response.getItems());
                 }
             }
-
             @Override
             public void onFailure(Exception e) {
                 Log.e("BOOK_SEARCH", "Search failed", e);

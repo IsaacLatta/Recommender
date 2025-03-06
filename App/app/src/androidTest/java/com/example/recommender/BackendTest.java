@@ -44,11 +44,17 @@ public class BackendTest {
         API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
         BookService bookService = new BookService(api);
         Controller controller = new Controller(bookService);
+        Store.getInstance().setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDE3NjI0NTV9.mCuRj4Wzat_lrCy6oC0EPNX0eUV_O5fZwgQYhshnYaA");
 
         CountDownLatch latch =  new CountDownLatch(1);
 
         String search_query = "harry potter";
-        Store.getInstance().setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDE3NjI0NTV9.mCuRj4Wzat_lrCy6oC0EPNX0eUV_O5fZwgQYhshnYaA");
+        controller.searchBook(search_query);
+
+        search_query ="Interesting books";
+        controller.searchBook(search_query);
+
+        search_query ="k,jabfjahsd";
         controller.searchBook(search_query);
 
         latch.await(5, TimeUnit.SECONDS);
