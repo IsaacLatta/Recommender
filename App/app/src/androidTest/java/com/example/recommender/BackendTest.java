@@ -2,12 +2,11 @@ package com.example.recommender;
 
 import android.util.Log;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.example.recommender.model.Store;
-import com.example.recommender.network.API;
-import com.example.recommender.network.AuthService;
-import com.example.recommender.network.BookService;
+import com.example.recommender.model.entity.Store;
+import com.example.recommender.network.api.API;
+import com.example.recommender.network.service.AuthService;
+import com.example.recommender.network.service.BookService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

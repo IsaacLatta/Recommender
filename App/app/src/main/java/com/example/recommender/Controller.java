@@ -3,19 +3,25 @@ package com.example.recommender;
 import android.util.Log;
 import androidx.lifecycle.ViewModel;
 
-import com.example.recommender.model.BookResponse;
-import com.example.recommender.model.LoginResponse;
-import com.example.recommender.model.Store;
-import com.example.recommender.model.User;
-import com.example.recommender.network.API;
-import com.example.recommender.network.AuthService;
-import com.example.recommender.network.BookService;
-import com.example.recommender.network.FriendsService;
-import com.example.recommender.network.FriendsService.FriendCallback;
-import com.example.recommender.network.FriendsService.FriendListCallback;
-import com.example.recommender.network.FriendsService.FriendRequestsCallback;
-import com.example.recommender.network.FriendsService.FriendSearchCallback;
-import com.example.recommender.network.ReadingService;
+import com.example.recommender.model.response.BasicResponse;
+import com.example.recommender.model.response.BookResponse;
+import com.example.recommender.model.response.LoginResponse;
+import com.example.recommender.model.entity.Store;
+import com.example.recommender.model.entity.User;
+import com.example.recommender.model.response.CreateGroupResponse;
+import com.example.recommender.model.response.FriendListResponse;
+import com.example.recommender.model.response.FriendRequestsResponse;
+import com.example.recommender.model.response.FriendSearchResponse;
+import com.example.recommender.model.response.SearchGroupsResponse;
+import com.example.recommender.network.api.API;
+import com.example.recommender.network.service.AuthService;
+import com.example.recommender.network.service.BookService;
+import com.example.recommender.network.service.FriendsService;
+import com.example.recommender.network.service.FriendsService.FriendCallback;
+import com.example.recommender.network.service.FriendsService.FriendListCallback;
+import com.example.recommender.network.service.FriendsService.FriendRequestsCallback;
+import com.example.recommender.network.service.FriendsService.FriendSearchCallback;
+import com.example.recommender.network.service.ReadingService;
 
 // ***** ORIGINAL CONTROLLER CLASS *****
 public class Controller extends ViewModel {
@@ -58,7 +64,7 @@ public class Controller extends ViewModel {
     //        }
     //        friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
     //            @Override
-    //            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+    //            public void onSuccess(com.example.recommender.model.response.BasicResponse response) {
     //                Log.d("FRIEND", "Friend request sent: " + response.getMessage());
     //            }
     //            @Override
@@ -76,7 +82,7 @@ public class Controller extends ViewModel {
         }
         friendsService.removeFriend(token, user.getUserId(), new FriendCallback() {
             @Override
-            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+            public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND", "Friend removed: " + response.getMessage());
             }
             @Override
@@ -94,7 +100,7 @@ public class Controller extends ViewModel {
         }
         friendsService.searchFriends(token, query, new FriendSearchCallback() {
             @Override
-            public void onSuccess(com.example.recommender.model.FriendSearchResponse response) {
+            public void onSuccess(FriendSearchResponse response) {
                 if (response.getUsers() != null) {
                     Store.getInstance().setSearchedUsers(response.getUsers());
                     Log.d("FRIEND_SEARCH", "Found " + Store.getInstance().getSearchedUsers().size() + " users.");
@@ -115,7 +121,7 @@ public class Controller extends ViewModel {
         }
         friendsService.listFriends(token, new FriendListCallback() {
             @Override
-            public void onSuccess(com.example.recommender.model.FriendListResponse response) {
+            public void onSuccess(FriendListResponse response) {
                 if (response.getFriends() != null) {
                     // UPDATE STORE
                     Store.getInstance().setFriends(response.getFriends());
@@ -137,7 +143,7 @@ public class Controller extends ViewModel {
         }
         friendsService.listFriendRequests(token, new FriendRequestsCallback() {
             @Override
-            public void onSuccess(com.example.recommender.model.FriendRequestsResponse response) {
+            public void onSuccess(FriendRequestsResponse response) {
                 if (response.getRequests() != null) {
                     Store.getInstance().setFriendRequests(response.getRequests());
                     Log.d("FRIEND_REQ", "Pending requests: " + Store.getInstance().getFriendRequests().size());
@@ -158,7 +164,7 @@ public class Controller extends ViewModel {
         }
         friendsService.handleFriendRequest(token, sender.getUserId(), approve, new FriendCallback() {
             @Override
-            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+            public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND_HANDLE", "Request handled: " + response.getMessage());
             }
             @Override
@@ -215,18 +221,12 @@ public class Controller extends ViewModel {
             }
         });
     }
-
-
     private void ensureReadingService() {
         if (readingService == null) {
             API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
             readingService = new ReadingService(api);
         }
     }
-
-    /**
-     * Join a reading group.
-     */
     public void joinReadingGroup(int groupId) {
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
@@ -234,9 +234,9 @@ public class Controller extends ViewModel {
             return;
         }
         ensureReadingService();
-        readingService.joinGroup(token, groupId, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+        readingService.joinGroup(token, groupId, new ReadingService.ReadingCallback<BasicResponse>() {
             @Override
-            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+            public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_JOIN", "Joined group: " + response.getMessage());
             }
             @Override
@@ -245,11 +245,6 @@ public class Controller extends ViewModel {
             }
         });
     }
-
-    /**
-     * Recommend a book to the group.
-     * We pass a group and book object, but under the hood we just need group_id, external_id.
-     */
     public void recommendBookToGroup(int groupId, String externalId) {
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
@@ -257,9 +252,9 @@ public class Controller extends ViewModel {
             return;
         }
         ensureReadingService();
-        readingService.recommendBook(token, groupId, externalId, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+        readingService.recommendBook(token, groupId, externalId, new ReadingService.ReadingCallback<BasicResponse>() {
             @Override
-            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+            public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_RECOMMEND", "Recommendation: " + response.getMessage());
             }
             @Override
@@ -268,10 +263,6 @@ public class Controller extends ViewModel {
             }
         });
     }
-
-    /**
-     * Approve or deny a book recommendation (admin only).
-     */
     public void handleBookRecommendation(int groupId, String externalId, boolean approve) {
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
@@ -281,9 +272,9 @@ public class Controller extends ViewModel {
         ensureReadingService();
 
         String action = approve ? "approve" : "deny";
-        readingService.handleRecommendation(token, groupId, externalId, action, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+        readingService.handleRecommendation(token, groupId, externalId, action, new ReadingService.ReadingCallback<BasicResponse>() {
             @Override
-            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+            public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_RECOMMEND", "Handle rec: " + response.getMessage());
             }
             @Override
@@ -292,10 +283,6 @@ public class Controller extends ViewModel {
             }
         });
     }
-
-    /**
-     * Search for reading groups by name.
-     */
     public void searchReadingGroups(String query) {
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
@@ -303,9 +290,9 @@ public class Controller extends ViewModel {
             return;
         }
         ensureReadingService();
-        readingService.searchGroups(token, query, new ReadingService.ReadingCallback<com.example.recommender.model.SearchGroupsResponse>() {
+        readingService.searchGroups(token, query, new ReadingService.ReadingCallback<SearchGroupsResponse>() {
             @Override
-            public void onSuccess(com.example.recommender.model.SearchGroupsResponse response) {
+            public void onSuccess(SearchGroupsResponse response) {
                 if (response.getGroups() != null) {
 //                    Store.getInstance().setSearchedReadingGroups(response.getGroups());
                     Log.d("READING_GROUP_SEARCH", "Found " + response.getGroups().size() + " groups.");
@@ -317,10 +304,6 @@ public class Controller extends ViewModel {
             }
         });
     }
-
-    /**
-     * Promote a member in a group (must be admin in that group).
-     */
     public void promoteGroupMember(int groupId, int memberId) {
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
@@ -328,9 +311,9 @@ public class Controller extends ViewModel {
             return;
         }
         ensureReadingService();
-        readingService.promoteMember(token, groupId, memberId, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+        readingService.promoteMember(token, groupId, memberId, new ReadingService.ReadingCallback<BasicResponse>() {
             @Override
-            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+            public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_PROMOTE", "Promoted member: " + response.getMessage());
             }
             @Override
@@ -339,11 +322,6 @@ public class Controller extends ViewModel {
             }
         });
     }
-
-    /**
-     * Create a brand-new reading group.
-     * The creator will be admin automatically.
-     */
     public void createReadingGroup(String groupName) {
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
@@ -351,9 +329,9 @@ public class Controller extends ViewModel {
             return;
         }
         ensureReadingService();
-        readingService.createGroup(token, groupName, new ReadingService.ReadingCallback<com.example.recommender.model.CreateGroupResponse>() {
+        readingService.createGroup(token, groupName, new ReadingService.ReadingCallback<CreateGroupResponse>() {
             @Override
-            public void onSuccess(com.example.recommender.model.CreateGroupResponse response) {
+            public void onSuccess(CreateGroupResponse response) {
                 if (response.isSuccess()) {
                     Log.d("READING_GROUP_CREATE", "Created group " + response.getGroupId() + ": " + response.getMessage());
                 } else {
