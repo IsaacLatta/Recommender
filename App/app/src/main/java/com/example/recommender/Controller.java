@@ -89,8 +89,8 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(com.example.recommender.model.FriendSearchResponse response) {
                 if (response.getUsers() != null) {
-                    // UPDATE STORE
-                    Log.d("FRIEND_SEARCH", "Found " + response.getUsers().size() + " users.");
+                    Store.getInstance().setSearchedUsers(response.getUsers());
+                    Log.d("FRIEND_SEARCH", "Found " + Store.getInstance().getSearchedUsers().size() + " users.");
                 }
             }
             @Override
@@ -111,7 +111,8 @@ public class Controller extends ViewModel {
             public void onSuccess(com.example.recommender.model.FriendListResponse response) {
                 if (response.getFriends() != null) {
                     // UPDATE STORE
-                    Log.d("FRIEND_LIST", "Total friends: " + response.getFriends().size());
+                    Store.getInstance().setFriends(response.getFriends());
+                    Log.d("FRIEND_LIST", "Total friends: " + Store.getInstance().getFriends().size());
                 }
             }
             @Override
@@ -131,8 +132,8 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(com.example.recommender.model.FriendRequestsResponse response) {
                 if (response.getRequests() != null) {
-                    // UPDATE STORE
-                    Log.d("FRIEND_REQ", "Pending requests: " + response.getRequests().size());
+                    Store.getInstance().setFriendRequests(response.getRequests());
+                    Log.d("FRIEND_REQ", "Pending requests: " + Store.getInstance().getFriendRequests().size());
                 }
             }
             @Override
@@ -192,14 +193,11 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(LoginResponse response) {
                 if(response.isSuccess()){
-                    String userId = response.getUser_id();
-                    String userName = response.getUsername();
-                    String token =  response.getToken();
-                    Store.getInstance().setUserId(userId);
-                    Store.getInstance().setUsername(userName);
-                    Store.getInstance().setToken(token);
-                    Log.d("LOGIN_SUCCESS", "User logged in: " + userName + " " + userId);
-                    Log.d("LOGIN_TOKEN", "Token Received: " + token);
+                    Store.getInstance().setUserId(response.getUser_id());
+                    Store.getInstance().setUsername(response.getUsername());
+                    Store.getInstance().setToken(response.getToken());
+                    Log.d("LOGIN_SUCCESS", "User logged in: " + Store.getInstance().getUsername() + " " + Store.getInstance().getUserId());
+                    Log.d("LOGIN_TOKEN", "Token Received: " + Store.getInstance().getToken());
                 } else {
                     Log.e("LOGIN_FAILED", "Invalid credentials");
                 }
