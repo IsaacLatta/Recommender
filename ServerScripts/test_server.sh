@@ -23,7 +23,7 @@ else
     echo "[!] Run with -v or --verbose to see database state before and after tests."
 fi
 
-echo "[*] Re-initializing database: $RDS_NAME on host $RDS_HOS..."
+echo "[*] Re-initializing database: $RDS_NAME on host $RDS_HOST..."
 PGPASSWORD="$RDS_PASS" psql -h "$RDS_HOST" -U "$RDS_USER" -d "$RDS_NAME" -f seed_db.sql
 if [ $? -ne 0 ]; then
   echo "[-] Error applying seed_db.sql"
@@ -179,7 +179,7 @@ echo "[*] Friend operation tests complete."
 # =========================
 # 5. Stop the Flask server
 # =========================
-echo "[*] Stopping Flask server ..."
+echo "[*] Stopping Flask server PID $SERVER_PID ..."
 kill $SERVER_PID
 wait $SERVER_PID 2>/dev/null
 echo "[+] Server stopped."
