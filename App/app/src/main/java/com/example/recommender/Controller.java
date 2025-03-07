@@ -15,11 +15,17 @@ import com.example.recommender.network.FriendsService.FriendCallback;
 import com.example.recommender.network.FriendsService.FriendListCallback;
 import com.example.recommender.network.FriendsService.FriendRequestsCallback;
 import com.example.recommender.network.FriendsService.FriendSearchCallback;
+import com.example.recommender.network.ReadingService;
 
+// ***** ORIGINAL CONTROLLER CLASS *****
 public class Controller extends ViewModel {
     private FriendsService friendsService;
     private AuthService authService;
     private BookService bookService;
+    private ReadingService readingService;
+
+
+
     public Controller(AuthService authService) {
         this.authService = authService;
     }
@@ -31,6 +37,7 @@ public class Controller extends ViewModel {
     public Controller(FriendsService friendsService) {
         this.friendsService = friendsService;
     }
+
     public void setBookService(BookService bookService) {
         this.bookService = bookService;
     }
@@ -43,23 +50,23 @@ public class Controller extends ViewModel {
         }
     }
 
-//    public void sendFriendRequest(User user) {
-//        String token = Store.getInstance().getToken();
-//        if (token == null || token.isEmpty()) {
-//            Log.e("FRIEND", "No JWT token available.");
-//            return;
-//        }
-//        friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
-//            @Override
-//            public void onSuccess(com.example.recommender.model.BasicResponse response) {
-//                Log.d("FRIEND", "Friend request sent: " + response.getMessage());
-//            }
-//            @Override
-//            public void onFailure(Exception e) {
-//                Log.e("FRIEND", "Send friend request failed", e);
-//            }
-//        });
-//    }
+    //    public void sendFriendRequest(User user) {
+    //        String token = Store.getInstance().getToken();
+    //        if (token == null || token.isEmpty()) {
+    //            Log.e("FRIEND", "No JWT token available.");
+    //            return;
+    //        }
+    //        friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
+    //            @Override
+    //            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+    //                Log.d("FRIEND", "Friend request sent: " + response.getMessage());
+    //            }
+    //            @Override
+    //            public void onFailure(Exception e) {
+    //                Log.e("FRIEND", "Send friend request failed", e);
+    //            }
+    //        });
+    //    }
 
     public void removeFriend(User user) {
         String token = Store.getInstance().getToken();
@@ -205,6 +212,157 @@ public class Controller extends ViewModel {
             @Override
             public void onFailure(Exception e) {
                 Log.e("LOGIN_ERROR", "Login failed", e);
+            }
+        });
+    }
+
+
+    private void ensureReadingService() {
+        if (readingService == null) {
+            API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
+            readingService = new ReadingService(api);
+        }
+    }
+
+    /**
+     * Join a reading group.
+     */
+    public void joinReadingGroup(int groupId) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("READING_GROUP", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+        readingService.joinGroup(token, groupId, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+            @Override
+            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+                Log.d("READING_GROUP_JOIN", "Joined group: " + response.getMessage());
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("READING_GROUP_JOIN", "Join group failed", e);
+            }
+        });
+    }
+
+    /**
+     * Recommend a book to the group.
+     * We pass a group and book object, but under the hood we just need group_id, external_id.
+     */
+    public void recommendBookToGroup(int groupId, String externalId) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("READING_GROUP", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+        readingService.recommendBook(token, groupId, externalId, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+            @Override
+            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+                Log.d("READING_GROUP_RECOMMEND", "Recommendation: " + response.getMessage());
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("READING_GROUP_RECOMMEND", "Recommend failed", e);
+            }
+        });
+    }
+
+    /**
+     * Approve or deny a book recommendation (admin only).
+     */
+    public void handleBookRecommendation(int groupId, String externalId, boolean approve) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("READING_GROUP", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+
+        String action = approve ? "approve" : "deny";
+        readingService.handleRecommendation(token, groupId, externalId, action, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+            @Override
+            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+                Log.d("READING_GROUP_RECOMMEND", "Handle rec: " + response.getMessage());
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("READING_GROUP_RECOMMEND", "Handle rec failed", e);
+            }
+        });
+    }
+
+    /**
+     * Search for reading groups by name.
+     */
+    public void searchReadingGroups(String query) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("READING_GROUP_SEARCH", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+        readingService.searchGroups(token, query, new ReadingService.ReadingCallback<com.example.recommender.model.SearchGroupsResponse>() {
+            @Override
+            public void onSuccess(com.example.recommender.model.SearchGroupsResponse response) {
+                if (response.getGroups() != null) {
+//                    Store.getInstance().setSearchedReadingGroups(response.getGroups());
+                    Log.d("READING_GROUP_SEARCH", "Found " + response.getGroups().size() + " groups.");
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("READING_GROUP_SEARCH", "Search groups failed", e);
+            }
+        });
+    }
+
+    /**
+     * Promote a member in a group (must be admin in that group).
+     */
+    public void promoteGroupMember(int groupId, int memberId) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("READING_GROUP_PROMOTE", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+        readingService.promoteMember(token, groupId, memberId, new ReadingService.ReadingCallback<com.example.recommender.model.BasicResponse>() {
+            @Override
+            public void onSuccess(com.example.recommender.model.BasicResponse response) {
+                Log.d("READING_GROUP_PROMOTE", "Promoted member: " + response.getMessage());
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("READING_GROUP_PROMOTE", "Promote failed", e);
+            }
+        });
+    }
+
+    /**
+     * Create a brand-new reading group.
+     * The creator will be admin automatically.
+     */
+    public void createReadingGroup(String groupName) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("READING_GROUP_CREATE", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+        readingService.createGroup(token, groupName, new ReadingService.ReadingCallback<com.example.recommender.model.CreateGroupResponse>() {
+            @Override
+            public void onSuccess(com.example.recommender.model.CreateGroupResponse response) {
+                if (response.isSuccess()) {
+                    Log.d("READING_GROUP_CREATE", "Created group " + response.getGroupId() + ": " + response.getMessage());
+                } else {
+                    Log.e("READING_GROUP_CREATE", "Group not created. " + response.getMessage());
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("READING_GROUP_CREATE", "Create group failed", e);
             }
         });
     }
