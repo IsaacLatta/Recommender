@@ -6,7 +6,6 @@ from .db import run_query, connect_to_db
 friends_bp = Blueprint('friends', __name__)
 
 def get_current_user():
-    return 2 # For testing purposes
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         return None
