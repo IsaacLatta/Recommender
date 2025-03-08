@@ -176,8 +176,37 @@ fi
 
 echo "[*] Friend operation tests complete."
 
+echo "[*] Testing /book endpoint ..."
+
+# 5a) Only 'save' the book
+echo "[*] Save a book GB_TEST_SAVE_ID"
+curl -s -X POST http://localhost:5022/book \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"external_id":"GB_TEST_SAVE_ID", "action":"save"}' | tee /tmp/book_save.json
+echo ""
+
+# 5b.) Only 'rate' a book
+echo "[*] Rate a book GB_TEST_RATE_ID"
+curl -s -X POST http://localhost:5022/book \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"external_id":"GB_TEST_RATE_ID", "action":"rate", "rating":5}' | tee /tmp/book_rate.json
+echo ""
+
+# 5c.) Both 'save' and 'rate' in one request
+echo "[*] Save & rate a book GB_TEST_SAVE_RATE_ID"
+curl -s -X POST http://localhost:5022/book \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"external_id":"GB_TEST_SAVE_RATE_ID", "action":"save_and_rate", "rating":3}' | tee /tmp/book_save_rate.json
+echo ""
+
+PGPASSWORD="$RDS_PASS" psql -h "$RDS_HOST" -U "$RDS_USER" -d "$RDS_NAME" \
+  -c "SELECT user_id, external_id, saved, rating FROM user_books ORDER BY id;"
+
 # =========================
-# 5. Stop the Flask server
+#   Stop the Flask server
 # =========================
 echo "[*] Stopping Flask server PID $SERVER_PID ..."
 kill $SERVER_PID

@@ -37,6 +37,19 @@ CREATE TABLE friendships (
     FOREIGN KEY (friend_id) REFERENCES users(user_id)
 );
 
+CREATE TABLE user_books (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    external_id TEXT NOT NULL,
+    saved BOOLEAN NOT NULL DEFAULT FALSE,
+    rating INT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE (user_id, external_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+
 CREATE TABLE reading_groups (
     group_id    SERIAL PRIMARY KEY,
     group_name  TEXT NOT NULL,
@@ -117,3 +130,6 @@ VALUES
 
 INSERT INTO friend_requests (sender_id, receiver_id, status)
 VALUES (4, 1, 'pending');
+
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'GB_HITCHHIKERS_GUIDE', true, NULL);
