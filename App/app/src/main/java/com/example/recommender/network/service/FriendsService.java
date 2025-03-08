@@ -1,5 +1,6 @@
 package com.example.recommender.network.service;
 
+import com.example.recommender.model.request.FriendRequestSendRequest;
 import com.example.recommender.model.response.BasicResponse;
 import com.example.recommender.model.response.FriendListResponse;
 import com.example.recommender.model.response.FriendRequestsResponse;
@@ -48,24 +49,24 @@ public class FriendsService {
         void onFailure(Exception e);
     }
 
-//    public void sendFriendRequest(String jwtToken, int receiverId, final FriendCallback callback) {
-//        String authHeader = "Bearer " + jwtToken;
-//        FriendRequestSendRequest request = new FriendRequestSendRequest(receiverId);
-//        friendsApi.sendFriendRequest(authHeader, request, api.getKey()).enqueue(new Callback<BasicResponse>() {
-//            @Override
-//            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    callback.onSuccess(response.body());
-//                } else {
-//                    callback.onFailure(new Exception("Send friend request failed with code: " + response.code()));
-//                }
-//            }
-//            @Override
-//            public void onFailure(Call<BasicResponse> call, Throwable t) {
-//                callback.onFailure(new Exception(t));
-//            }
-//        });
-//    }
+    public void sendFriendRequest(String jwtToken, int receiverId, final FriendCallback callback) {
+        String authHeader = "Bearer " + jwtToken;
+        FriendRequestSendRequest request = new FriendRequestSendRequest(receiverId);
+        friendsApi.sendFriendRequest(authHeader, request, api.getKey()).enqueue(new Callback<BasicResponse>() {
+            @Override
+            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(new Exception("Send friend request failed with code: " + response.code()));
+                }
+            }
+            @Override
+            public void onFailure(Call<BasicResponse> call, Throwable t) {
+                callback.onFailure(new Exception(t));
+            }
+        });
+    }
 
     public void removeFriend(String jwtToken, int friendId, final FriendCallback callback) {
         String authHeader = "Bearer " + jwtToken;

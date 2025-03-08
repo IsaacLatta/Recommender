@@ -35,19 +35,19 @@ public class FriendOperationsTest {
         controller = new Controller(new FriendsService(api));
     }
 
-//    @Test
-//    public void testSendFriendRequest() throws InterruptedException {
-//        // Send a friend request from alice to heidi (user_id = 8).
-//        // (Assuming alice is not already connected with heidi.)
-//        User heidi = new User(8, "heidi");
-//
-//        CountDownLatch latch = new CountDownLatch(1);
-//        Log.d("FRIEND_TEST", "Sending friend request to heidi");
-//        controller.sendFriendRequest(heidi);
-//
-//        // Wait for asynchronous response (inspect Logcat for "Friend request sent:" output).
-//        latch.await(5, TimeUnit.SECONDS);
-//    }
+    @Test
+    public void testSendFriendRequest() throws InterruptedException {
+        // Send a friend request from alice to heidi (user_id = 8).
+        // (Assuming alice is not already connected with heidi.)
+        User heidi = new User(8, "heidi");
+
+        CountDownLatch latch = new CountDownLatch(1);
+        Log.d("FRIEND_TEST", "Sending friend request to heidi");
+        controller.sendFriendRequest(heidi);
+
+        // Wait for asynchronous response (inspect Logcat for "Friend request sent:" output).
+        latch.await(5, TimeUnit.SECONDS);
+    }
 
     @Test
     public void testRemoveFriend() throws InterruptedException {

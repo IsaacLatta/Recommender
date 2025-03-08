@@ -1,5 +1,6 @@
 package com.example.recommender.network.api;
 
+import com.example.recommender.model.request.FriendRequestSendRequest;
 import com.example.recommender.model.response.BasicResponse;
 import com.example.recommender.model.response.FriendListResponse;
 import com.example.recommender.model.response.FriendRequestsResponse;
@@ -41,12 +42,12 @@ public interface FriendsApi {
             @Header("x-api-key") String apiKey
     );
 
-//    @POST("friend/request/send")
-//    Call<BasicResponse> sendFriendRequest(
-//            @Header("Authorization") String auth,
-//            @Body FriendRequestSendRequest request,
-//            @Header("x-api-key") String apiKey
-//    );
+    @POST("friend/request/send")
+    Call<BasicResponse> sendFriendRequest(
+            @Header("Authorization") String auth,
+            @Body FriendRequestSendRequest request,
+            @Header("x-api-key") String apiKey
+    );
 
     @POST("friend/request")
     Call<BasicResponse> handleFriendRequest(

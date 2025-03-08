@@ -3,6 +3,7 @@ package com.example.recommender;
 import android.util.Log;
 import androidx.lifecycle.ViewModel;
 
+import com.example.recommender.model.entity.Book;
 import com.example.recommender.model.response.BasicResponse;
 import com.example.recommender.model.response.BookResponse;
 import com.example.recommender.model.response.LoginResponse;
@@ -23,7 +24,6 @@ import com.example.recommender.network.service.FriendsService.FriendRequestsCall
 import com.example.recommender.network.service.FriendsService.FriendSearchCallback;
 import com.example.recommender.network.service.ReadingService;
 
-// ***** ORIGINAL CONTROLLER CLASS *****
 public class Controller extends ViewModel {
     private FriendsService friendsService;
     private AuthService authService;
@@ -49,30 +49,29 @@ public class Controller extends ViewModel {
     }
 
     public Controller() {
-        // Initialize FriendsService if not already done.
         if (friendsService == null) {
             API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
             friendsService = new FriendsService(api);
         }
     }
 
-    //    public void sendFriendRequest(User user) {
-    //        String token = Store.getInstance().getToken();
-    //        if (token == null || token.isEmpty()) {
-    //            Log.e("FRIEND", "No JWT token available.");
-    //            return;
-    //        }
-    //        friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
-    //            @Override
-    //            public void onSuccess(com.example.recommender.model.response.BasicResponse response) {
-    //                Log.d("FRIEND", "Friend request sent: " + response.getMessage());
-    //            }
-    //            @Override
-    //            public void onFailure(Exception e) {
-    //                Log.e("FRIEND", "Send friend request failed", e);
-    //            }
-    //        });
-    //    }
+        public void sendFriendRequest(User user) {
+            String token = Store.getInstance().getToken();
+            if (token == null || token.isEmpty()) {
+                Log.e("FRIEND", "No JWT token available.");
+                return;
+            }
+            friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
+                @Override
+                public void onSuccess(com.example.recommender.model.response.BasicResponse response) {
+                    Log.d("FRIEND", "Friend request sent: " + response.getMessage());
+                }
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e("FRIEND", "Send friend request failed", e);
+                }
+            });
+        }
 
     public void removeFriend(User user) {
         String token = Store.getInstance().getToken();
@@ -123,7 +122,6 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(FriendListResponse response) {
                 if (response.getFriends() != null) {
-                    // UPDATE STORE
                     Store.getInstance().setFriends(response.getFriends());
                     Log.d("FRIEND_LIST", "Total friends: " + Store.getInstance().getFriends().size());
                 }
@@ -197,6 +195,32 @@ public class Controller extends ViewModel {
             @Override
             public void onFailure(Exception e) {
                 Log.e("BOOK_SEARCH", "Search failed", e);
+            }
+        });
+    }
+
+    public void saveOrRateBook(String externalId, String action, Integer rating) {
+        String token = Store.getInstance().getToken();
+        Log.d("BOOK_OPS", "Using token: " + token);
+        if (token == null || token.isEmpty()) {
+            Log.e("BOOK_OPS", "No JWT token available.");
+            return;
+        }
+
+        if (bookService == null) {
+            API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
+            bookService = new BookService(api);
+        }
+
+        bookService.saveOrRateBook(token, externalId, action, rating, new BookService.SaveOrRateCallback() {
+            @Override
+            public void onSuccess(BasicResponse response) {
+                Log.d("BOOK_OPS", "Save/Rate success: " + response.getMessage());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("BOOK_OPS", "Save/Rate failed", e);
             }
         });
     }
