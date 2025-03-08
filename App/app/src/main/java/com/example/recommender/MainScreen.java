@@ -1,7 +1,6 @@
 package com.example.recommender;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.activity.EdgeToEdge;
 
@@ -10,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 public class MainScreen extends AppCompatActivity {
 
@@ -35,6 +33,10 @@ public class MainScreen extends AppCompatActivity {
                 setCurrentFragment(groupfrag);
             } else if (id == R.id.add) {
                 setCurrentFragment(addfrag);
+            } else if (id == R.id.rate) {
+                setCurrentFragment(ratefrag);
+            } else if (id == R.id.saved) {
+                setCurrentFragment(savedfrag);
             }
             return true;
         });
@@ -42,6 +44,7 @@ public class MainScreen extends AppCompatActivity {
     }
 
     // Helper method to switch fragments in the container
+
     private void setCurrentFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.flFragment, fragment)
