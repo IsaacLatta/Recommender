@@ -2,6 +2,7 @@ import jwt
 from flask import Blueprint, jsonify, request, current_app
 from .db import run_query
 from .friends import get_current_user
+from .books import fetch_from_google
 
 reading_bp = Blueprint('reading', __name__)
 
@@ -186,3 +187,62 @@ def create_group():
     except Exception as e:
         current_app.logger.error(f"Error in create_group: {e}")
         return jsonify({"success": False, "error": "Server error"}), 500
+
+@reading_bp.route('/reading/group/list', methods=['GET'])
+def list_user_groups():
+    user_id = get_current_user()
+    if not user_id:
+        return jsonify({"success": False, "error": "Invalid token"}), 401
+
+    try:
+        groups = run_query(
+            """
+            SELECT rg.group_id, rg.group_name, rg.created_by, 
+                   rgm.role, rgm.joined_at
+            FROM reading_group_members rgm
+            JOIN reading_groups rg ON rgm.group_id = rg.group_id
+            WHERE rgm.user_id = %s
+            """,
+            (user_id,)
+        )
+        return jsonify({"success": True, "groups": groups}), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Error in list_user_groups: {e}")
+        return jsonify({"success": False, "error": "Server error"}), 500
+
+@reading_bp.route('/reading/group/recommend/list', methods=['GET'])
+def list_recommendations():
+    user_id = get_current_user()
+    if not user_id:
+        return jsonify({"success": False, "error": "Invalid token"}), 401
+
+    group_id = request.args.get("group_id")  # optional
+
+    try:
+        query = """
+            SELECT rl.group_id, rl.external_id, rl.status, rl.suggested_by
+            FROM reading_list rl
+            JOIN reading_group_members rgm ON rl.group_id = rgm.group_id
+            WHERE rgm.user_id = %s
+        """
+        params = [user_id]
+        if group_id:
+            query += " AND rl.group_id = %s"
+            params.append(group_id)
+
+        recs = run_query(query, tuple(params))
+        if not recs:
+            return jsonify({"success": True, "books": []}), 200
+
+        results = fetch_from_google(
+            recs,
+            extra_fields=["status", "suggested_by"]
+        )
+
+        return jsonify({"success": True, "books": results}), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Error in list_recommendations: {e}")
+        return jsonify({"success": False, "error": "Server error"}), 500
+

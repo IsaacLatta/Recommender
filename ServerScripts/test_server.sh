@@ -39,8 +39,6 @@ PGPASSWORD="$RDS_PASS" psql -h "$RDS_HOST" -U "$RDS_USER" -d "$RDS_NAME" \
 # =========================
 
 echo "[*] Starting Flask server ..."
-# Example: If your Flask entry point is `app.py` or `main.py`, etc.
-# Adjust command for your environment:
 FLASK_APP=../Backend/run.py FLASK_ENV=development flask run --host=0.0.0.0 --port=5022 &
 SERVER_PID=$!
 sleep 3  # Give the server a few seconds to start
@@ -60,6 +58,13 @@ echo ""
 TOKEN=$(cat /tmp/login_response.json | jq -r '.token')
 echo "[+] Got token: $TOKEN"
 echo "[*] Signed in as alice [user_id = 1]"
+
+
+echo "[*] Testing GET /book ..."
+curl -s -X GET http://localhost:5022/book \
+  -H "Authorization: Bearer $TOKEN" #| tee /tmp/list_books.json
+echo ""
+
 
 echo "[*] Beginning tests for group operations."
 
@@ -100,6 +105,7 @@ curl -s -X POST http://localhost:5022/reading/group/promote \
   -H "Content-Type: application/json" \
   -d '{"group_id":1, "member_id":2}' | tee /tmp/promote_member.json
 echo ""
+
 
 # =========================
 # 4. Check DB State

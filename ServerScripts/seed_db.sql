@@ -120,6 +120,10 @@ INSERT INTO reading_list (group_id, external_id, suggested_by, status) VALUES
 (1, 'GB_DUNE_ID', 1, 'approved'),
 (1, 'GB_NEUROMANCER_ID', 2, 'pending');
 
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, 'GB_RECOMMEND_ID', 1, 'pending');
+
+
 -- Friendships
 INSERT INTO friendships (user_id, friend_id)
 VALUES
@@ -133,3 +137,5 @@ VALUES (4, 1, 'pending');
 
 INSERT INTO user_books (user_id, external_id, saved, rating)
 VALUES (1, 'GB_HITCHHIKERS_GUIDE', true, NULL);
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'GB_SAMPLE_BOOK', TRUE, 4);

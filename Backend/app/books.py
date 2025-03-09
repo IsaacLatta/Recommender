@@ -11,6 +11,7 @@ def parse_books(data):
     for item in items:
         volume_info = item.get("volumeInfo", {})
         results.append({
+            "external_id": volume_info.get("id"),
             "title": volume_info.get("title", "No Title"),
             "authors": volume_info.get("authors", []),
             "publisher": volume_info.get("publisher", ""),
@@ -48,7 +49,7 @@ def search_book():
         "success": True
     }), 200
 
-@books_bp.route('/book', methods=['POST'])  # Rate or save a book
+@books_bp.route('/book', methods=['POST'])  
 def manage_book_actions():
     user_id = get_current_user()
     if not user_id:
@@ -74,6 +75,7 @@ def manage_book_actions():
             record_id = existing[0]["id"]
             current_saved = existing[0]["saved"]
             current_rating = existing[0]["rating"]
+
             if save:
                 current_saved = True
             if rate:
@@ -81,6 +83,7 @@ def manage_book_actions():
                 if not isinstance(new_rating, int):
                     return jsonify({"success": False, "error": "Invalid rating; must be int"}), 400
                 current_rating = new_rating
+
             run_query(
                 """
                 UPDATE user_books
@@ -99,6 +102,7 @@ def manage_book_actions():
                 new_rating = data.get("rating")
                 if not isinstance(new_rating, int):
                     return jsonify({"success": False, "error": "Invalid rating; must be int"}), 400
+
             run_query(
                 """
                 INSERT INTO user_books (user_id, external_id, saved, rating)
@@ -113,4 +117,69 @@ def manage_book_actions():
 
     except Exception as e:
         current_app.logger.error(f"Error in /book: {e}")
+        return jsonify({"success": False, "error": "Server error"}), 500
+
+def fetch_from_google(rows, extra_fields=None):
+    if not extra_fields:
+        extra_fields = []
+
+    results = []
+    for row in rows:
+        volume_id = row.get("external_id")
+        if not volume_id:
+            continue
+
+        extra_data = {}
+        for field in extra_fields:
+            extra_data[field] = row.get(field)
+
+        url = f"{current_app.config['BOOK_API_URL']}/{volume_id}"
+        params = {"key": current_app.config["BOOK_API_KEY"]}
+        g_response = requests.get(url, params=params)
+        if g_response.status_code != 200:
+            current_app.logger.warning(f"Google API error for volume_id={volume_id}: {g_response.status_code}")
+            results.append({
+                "external_id": volume_id,
+                "title": None,
+                "authors": [],
+                "thumbnail": None,
+                "description": None,
+                "previewLink": None,
+                **extra_data
+            })
+            continue
+
+        data = g_response.json()
+        volume_info = data.get("volumeInfo", {})
+        results.append({
+            "external_id": volume_id,
+            "title": volume_info.get("title", "No Title"),
+            "authors": volume_info.get("authors", []),
+            "description": volume_info.get("description", ""),
+            "previewLink": volume_info.get("previewLink", ""),
+            "thumbnail": volume_info.get("imageLinks", {}).get("thumbnail", ""),
+            **extra_data
+        })
+    return results
+
+
+@books_bp.route('/book', methods=['GET'])
+def list_books():
+    user_id = get_current_user()
+    if not user_id:
+        return jsonify({"success": False, "error": "Invalid token"}), 401
+
+    try:
+        rows = run_query(
+            "SELECT external_id, rating FROM user_books WHERE user_id = %s AND saved = TRUE",
+            (user_id,)
+        )
+        if not rows:
+            return jsonify({"success": True, "books": []}), 200
+
+        results = fetch_from_google(rows, extra_fields=["rating"])
+        return jsonify({"success": True, "books": results}), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Error in list_books: {e}")
         return jsonify({"success": False, "error": "Server error"}), 500

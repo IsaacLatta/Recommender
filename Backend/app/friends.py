@@ -8,7 +8,6 @@ friends_bp = Blueprint('friends', __name__)
 def get_current_user():
     auth_header = request.headers.get("authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
-        print("Missing auth header")
         return None
     token = auth_header[len("Bearer "):]
     try:
