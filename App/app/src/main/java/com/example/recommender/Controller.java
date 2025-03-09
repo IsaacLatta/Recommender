@@ -54,24 +54,44 @@ public class Controller extends ViewModel {
             friendsService = new FriendsService(api);
         }
     }
-
-        public void sendFriendRequest(User user) {
-            String token = Store.getInstance().getToken();
-            if (token == null || token.isEmpty()) {
-                Log.e("FRIEND", "No JWT token available.");
-                return;
-            }
-            friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
-                @Override
-                public void onSuccess(com.example.recommender.model.response.BasicResponse response) {
-                    Log.d("FRIEND", "Friend request sent: " + response.getMessage());
-                }
-                @Override
-                public void onFailure(Exception e) {
-                    Log.e("FRIEND", "Send friend request failed", e);
-                }
-            });
+    public void listFriends() {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("FRIEND_LIST", "No JWT token available.");
+            return;
         }
+        friendsService.listFriends(token, new FriendListCallback() {
+            @Override
+            public void onSuccess(FriendListResponse response) {
+                if (response.getFriends() != null) {
+                    Store.getInstance().setFriends(response.getFriends());
+                    Log.d("FRIEND_LIST", "Total friends: " + Store.getInstance().getFriends().size());
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("FRIEND_LIST", "List friends failed", e);
+            }
+        });
+    }
+    public void sendFriendRequest(User user) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("FRIEND", "No JWT token available.");
+            return;
+        }
+        friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
+            @Override
+            public void onSuccess(com.example.recommender.model.response.BasicResponse response) {
+                Log.d("FRIEND", "Friend request sent: " + response.getMessage());
+                listFriends(); // Update the friend list
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("FRIEND", "Send friend request failed", e);
+            }
+        });
+    }
 
     public void removeFriend(User user) {
         String token = Store.getInstance().getToken();
@@ -83,6 +103,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND", "Friend removed: " + response.getMessage());
+                listFriends(); // Update the friend list
             }
             @Override
             public void onFailure(Exception e) {
@@ -108,27 +129,6 @@ public class Controller extends ViewModel {
             @Override
             public void onFailure(Exception e) {
                 Log.e("FRIEND_SEARCH", "Search friends failed", e);
-            }
-        });
-    }
-
-    public void listFriends() {
-        String token = Store.getInstance().getToken();
-        if (token == null || token.isEmpty()) {
-            Log.e("FRIEND_LIST", "No JWT token available.");
-            return;
-        }
-        friendsService.listFriends(token, new FriendListCallback() {
-            @Override
-            public void onSuccess(FriendListResponse response) {
-                if (response.getFriends() != null) {
-                    Store.getInstance().setFriends(response.getFriends());
-                    Log.d("FRIEND_LIST", "Total friends: " + Store.getInstance().getFriends().size());
-                }
-            }
-            @Override
-            public void onFailure(Exception e) {
-                Log.e("FRIEND_LIST", "List friends failed", e);
             }
         });
     }
@@ -164,6 +164,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND_HANDLE", "Request handled: " + response.getMessage());
+                listFriendRequests(); // update the friend requests list
             }
             @Override
             public void onFailure(Exception e) {
@@ -235,6 +236,12 @@ public class Controller extends ViewModel {
                     Store.getInstance().setToken(response.getToken());
                     Log.d("LOGIN_SUCCESS", "User logged in: " + Store.getInstance().getUsername() + " " + Store.getInstance().getUserId());
                     Log.d("LOGIN_TOKEN", "Token Received: " + Store.getInstance().getToken());
+
+                    listFriends();
+                    listFriendRequests();
+
+                    // list saved books
+                    // list groups
                 } else {
                     Log.e("LOGIN_FAILED", "Invalid credentials");
                 }
