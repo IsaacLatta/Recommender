@@ -122,7 +122,12 @@ INSERT INTO reading_list (group_id, external_id, suggested_by, status) VALUES
 
 INSERT INTO reading_list (group_id, external_id, suggested_by, status)
 VALUES (1, 'GB_RECOMMEND_ID', 1, 'pending');
-
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, 'afCxg5sogvAC', 2, 'approve');
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, '7nDPUjKVDHcC', 1, 'deny');
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, '12D6DwAAQBAJ', 1, 'pending');
 
 -- Friendships
 INSERT INTO friendships (user_id, friend_id)
@@ -139,3 +144,10 @@ INSERT INTO user_books (user_id, external_id, saved, rating)
 VALUES (1, 'GB_HITCHHIKERS_GUIDE', true, NULL);
 INSERT INTO user_books (user_id, external_id, saved, rating)
 VALUES (1, 'GB_SAMPLE_BOOK', TRUE, 4);
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'dpy3CwAAQBAJ', TRUE, 3);
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'tNClBwAAQBAJ', TRUE, 4);
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'mJHhEAAAQBAJ', TRUE, 4);
+

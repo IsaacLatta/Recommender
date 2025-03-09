@@ -106,6 +106,29 @@ curl -s -X POST http://localhost:5022/reading/group/promote \
   -d '{"group_id":1, "member_id":2}' | tee /tmp/promote_member.json
 echo ""
 
+# 3f) Recommend a book
+echo "[*] Testing recommend_book_to_group..."
+curl -s -X POST http://localhost:5022/reading/group/recommend \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"group_id":1, "external_id":"GB_TEST_BOOK_ID"}' | tee /tmp/recommend_book.json
+echo ""
+
+echo "[*] Testing list_recommendations..."
+curl -s -X GET http://localhost:5022/reading/group/recommend/list \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"group_id":2}' | tee /tmp/recommend_book.json
+echo ""
+
+
+# 3g) List all of alice's groups
+echo "[*] Testing /group/list ..."
+curl -s -X GET http://localhost:5022/reading/group/list \
+  -H "Authorization: Bearer $TOKEN" | tee /tmp/friend_list.json
+echo ""
+
+
 
 # =========================
 # 4. Check DB State
