@@ -107,7 +107,8 @@ INSERT INTO friend_requests (sender_id, receiver_id, status) VALUES
 -- Reading groups
 INSERT INTO reading_groups (group_name, created_by) VALUES
 ('Sci-Fi Fans', 1),      
-('Mystery Lovers', 2);   
+('Mystery Lovers', 2),
+('Fiction Fanatics', 2);   
 
 -- Group members
 INSERT INTO reading_group_members (group_id, user_id, role) VALUES
