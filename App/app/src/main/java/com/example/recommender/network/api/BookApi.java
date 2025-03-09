@@ -23,4 +23,11 @@ public interface BookApi {
             @Body BookActionRequest request,
             @Header("x-api-key") String apiKey
     );
+
+    @GET("book")
+    Call<BookResponse> getUserBooks(
+            @Header("Authorization") String auth,
+            @Header("x-api-key") String apiKey
+    );
+
 }

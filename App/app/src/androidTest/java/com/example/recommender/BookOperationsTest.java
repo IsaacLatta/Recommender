@@ -20,11 +20,7 @@ public class BookOperationsTest {
     @Before
     public void setup() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
-        BookService bookService = new BookService(api);
-        AuthService authService = new AuthService(api);
-        controller = new Controller(authService);
-        controller.setBookService(bookService);
+        controller = new Controller();
         String username = "alice", password = "password123";
         Log.d("LOGIN_TEST", "Checking valid credentials: " + username + ", " + password);
 

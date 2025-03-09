@@ -2,11 +2,13 @@ package com.example.recommender.network.service;
 
 import com.example.recommender.model.response.BasicResponse;
 import com.example.recommender.model.request.CreateGroupRequest;
+import com.example.recommender.model.response.BookResponse;
 import com.example.recommender.model.response.CreateGroupResponse;
 import com.example.recommender.model.request.HandleRecommendationRequest;
 import com.example.recommender.model.request.JoinGroupRequest;
 import com.example.recommender.model.request.PromoteMemberRequest;
 import com.example.recommender.model.request.RecommendBookRequest;
+import com.example.recommender.model.response.GroupListResponse;
 import com.example.recommender.model.response.SearchGroupsResponse;
 import com.example.recommender.network.api.API;
 import com.example.recommender.network.api.ReadingApi;
@@ -30,7 +32,6 @@ public class ReadingService {
         readingApi = retrofit.create(ReadingApi.class);
     }
 
-    // Generic callback interface
     public interface ReadingCallback<T> {
         void onSuccess(T response);
         void onFailure(Exception e);
@@ -148,4 +149,49 @@ public class ReadingService {
             }
         });
     }
+
+    public void listGroupRecommendations(String jwtToken, Integer groupId, final BookService.BookCallback callback) {
+        String authHeader = "Bearer " + jwtToken;
+        Call<BookResponse> call = readingApi.listGroupRecommendations(authHeader, groupId, api.getKey());
+        call.enqueue(new Callback<BookResponse>() {
+            @Override
+            public void onResponse(Call<BookResponse> call, Response<BookResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(new Exception("Fetch recommendations failed, code: " + response.code()));
+                }
+            }
+            @Override
+            public void onFailure(Call<BookResponse> call, Throwable t) {
+                callback.onFailure(new Exception(t));
+            }
+        });
+    }
+
+    public void listUserGroups(String jwtToken, final ReadingCallback<GroupListResponse> callback) {
+        String authHeader = "Bearer " + jwtToken;
+        Call<GroupListResponse> call = readingApi.listUserGroups(authHeader, api.getKey());
+        call.enqueue(new Callback<GroupListResponse>() {
+            @Override
+            public void onResponse(Call<GroupListResponse> call, Response<GroupListResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(new Exception("List user groups failed, code: " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GroupListResponse> call, Throwable t) {
+                callback.onFailure(new Exception(t));
+            }
+        });
+    }
+
+//    public interface ReadingCallback {
+//        void onSuccess(BasicResponse response);
+//        void onFailure(Exception e);
+//    }
+
 }

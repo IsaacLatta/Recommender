@@ -2,11 +2,13 @@ package com.example.recommender.network.api;
 
 import com.example.recommender.model.response.BasicResponse;
 import com.example.recommender.model.request.CreateGroupRequest;
+import com.example.recommender.model.response.BookResponse;
 import com.example.recommender.model.response.CreateGroupResponse;
 import com.example.recommender.model.request.HandleRecommendationRequest;
 import com.example.recommender.model.request.JoinGroupRequest;
 import com.example.recommender.model.request.PromoteMemberRequest;
 import com.example.recommender.model.request.RecommendBookRequest;
+import com.example.recommender.model.response.GroupListResponse;
 import com.example.recommender.model.response.SearchGroupsResponse;
 
 import retrofit2.Call;
@@ -59,4 +61,19 @@ public interface ReadingApi {
             @Header("x-api-key") String apiKey,
             @Body CreateGroupRequest request
     );
+
+    @GET("reading/group/recommend/list")
+    Call<BookResponse> listGroupRecommendations(
+            @Header("Authorization") String auth,
+            @Query("group_id") Integer groupId,    // can be null
+            @Header("x-api-key") String apiKey
+    );
+
+    @GET("reading/group/list")
+    Call<GroupListResponse> listUserGroups(
+            @Header("Authorization") String auth,
+            @Header("x-api-key") String apiKey
+    );
+
+
 }

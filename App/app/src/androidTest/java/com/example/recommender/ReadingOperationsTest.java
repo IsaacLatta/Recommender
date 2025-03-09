@@ -24,19 +24,8 @@ public class ReadingOperationsTest {
 
     @Before
     public void setup() {
-        // Sample valid JWT for user "alice" (user_id = 1).
-        // Adjust to whichever user you want to test.
-        String token = "eyJhbGciOiJI..."; // truncated for example
-        Store.getInstance().setToken(token);
-
-        // Set the local "current user" info
-        Store.getInstance().setUserId("1");
-        Store.getInstance().setUsername("alice");
-
-        // Create a new Controller that can handle reading-group calls
-        // (the no-arg constructor in your code will auto-init some services,
-        // but if you prefer, you can pass in new ReadingService(...) directly).
         controller = new Controller();
+        controller.login("alice", "password123");
     }
 
     @Test
@@ -44,18 +33,14 @@ public class ReadingOperationsTest {
         CountDownLatch latch = new CountDownLatch(1);
         Log.d("READING_TEST", "Creating a new reading group: 'MyTestGroup'");
 
-        // We call createReadingGroup, which is async. We'll rely on Logcat to verify success/fail.
         controller.createReadingGroup("MyTestGroup");
 
-        // Wait a few seconds to let the async call finish.
         latch.await(5, TimeUnit.SECONDS);
     }
 
     @Test
     public void testJoinGroup() throws InterruptedException {
-        // Suppose group_id=2 is "Mystery Lovers" from your DB.
-        // We'll try to join as user_id=1 (alice).
-        int groupId = 2;
+        int groupId = 3;
         CountDownLatch latch = new CountDownLatch(1);
 
         Log.d("READING_TEST", "Joining group_id=" + groupId);
@@ -66,7 +51,6 @@ public class ReadingOperationsTest {
 
     @Test
     public void testRecommendBook() throws InterruptedException {
-        // Suppose we want to recommend a Google Books ID "GB_NEUROMANCER_ID" to group_id=1
         CountDownLatch latch = new CountDownLatch(1);
         int groupId = 1;
         String externalId = "GB_NEUROMANCER_ID";
@@ -79,7 +63,6 @@ public class ReadingOperationsTest {
 
     @Test
     public void testSearchGroups() throws InterruptedException {
-        // We'll look for groups matching "Fans" in the name, e.g. "Sci-Fi Fans".
         CountDownLatch latch = new CountDownLatch(1);
         String query = "Fans";
 
@@ -91,8 +74,6 @@ public class ReadingOperationsTest {
 
     @Test
     public void testPromoteMember() throws InterruptedException {
-        // Suppose user_id=1 (alice) is an admin of group_id=1,
-        // and we want to promote user_id=3 (charlie) to admin as well.
         CountDownLatch latch = new CountDownLatch(1);
         int groupId = 1;
         int memberId = 3;
@@ -105,14 +86,32 @@ public class ReadingOperationsTest {
 
     @Test
     public void testHandleRecommendation() throws InterruptedException {
-        // Suppose there's a "pending" recommendation in group_id=1 for external_id="OL_1984_ID"
-        // and user_id=1 is an admin. We'll approve it.
         CountDownLatch latch = new CountDownLatch(1);
         int groupId = 1;
         String externalId = "OL_1984_ID";
 
         Log.d("READING_TEST", "Approving recommendation for " + externalId + " in group_id=" + groupId);
         controller.handleBookRecommendation(groupId, externalId, true /*approve*/);
+
+        latch.await(5, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void testListUserGroups() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+
+        Log.d("READING_TEST", "Listing user groups for current user");
+        controller.listUserGroups();
+
+        latch.await(5, TimeUnit.SECONDS);
+    }
+    @Test
+    public void testListGroupRecommendations() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        int groupId = 1; // some known group that has recommended books
+
+        Log.d("READING_TEST", "Listing recommended books for group_id=" + groupId);
+        controller.listGroupRecommendations(groupId);
 
         latch.await(5, TimeUnit.SECONDS);
     }

@@ -3,9 +3,9 @@ package com.example.recommender;
 import android.util.Log;
 import androidx.lifecycle.ViewModel;
 
-import com.example.recommender.model.entity.Book;
 import com.example.recommender.model.response.BasicResponse;
 import com.example.recommender.model.response.BookResponse;
+import com.example.recommender.model.response.GroupListResponse;
 import com.example.recommender.model.response.LoginResponse;
 import com.example.recommender.model.entity.Store;
 import com.example.recommender.model.entity.User;
@@ -25,12 +25,10 @@ import com.example.recommender.network.service.FriendsService.FriendSearchCallba
 import com.example.recommender.network.service.ReadingService;
 
 public class Controller extends ViewModel {
-    private FriendsService friendsService;
+    private FriendsService friendService;
     private AuthService authService;
     private BookService bookService;
     private ReadingService readingService;
-
-
 
     public Controller(AuthService authService) {
         this.authService = authService;
@@ -41,17 +39,29 @@ public class Controller extends ViewModel {
     }
 
     public Controller(FriendsService friendsService) {
-        this.friendsService = friendsService;
+        this.friendService = friendsService;
     }
 
     public void setBookService(BookService bookService) {
         this.bookService = bookService;
     }
+    public void setAuthService(AuthService authService) {this.authService = authService;}
 
+    public void setReadingService(ReadingService readingService) {this.readingService = readingService;}
+    public void setFriendService(FriendsService friendService) {this.friendService = friendService;}
     public Controller() {
-        if (friendsService == null) {
-            API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
-            friendsService = new FriendsService(api);
+        API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
+        if (friendService == null) {
+            friendService = new FriendsService(api);
+        }
+        if(readingService == null) {
+            readingService = new ReadingService(api);
+        }
+        if(bookService == null) {
+            bookService  = new BookService(api);
+        }
+        if(authService == null) {
+            authService = new AuthService(api);
         }
     }
     public void listFriends() {
@@ -60,7 +70,7 @@ public class Controller extends ViewModel {
             Log.e("FRIEND_LIST", "No JWT token available.");
             return;
         }
-        friendsService.listFriends(token, new FriendListCallback() {
+        friendService.listFriends(token, new FriendListCallback() {
             @Override
             public void onSuccess(FriendListResponse response) {
                 if (response.getFriends() != null) {
@@ -80,7 +90,7 @@ public class Controller extends ViewModel {
             Log.e("FRIEND", "No JWT token available.");
             return;
         }
-        friendsService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
+        friendService.sendFriendRequest(token, user.getUserId(), new FriendCallback() {
             @Override
             public void onSuccess(com.example.recommender.model.response.BasicResponse response) {
                 Log.d("FRIEND", "Friend request sent: " + response.getMessage());
@@ -99,7 +109,7 @@ public class Controller extends ViewModel {
             Log.e("FRIEND", "No JWT token available.");
             return;
         }
-        friendsService.removeFriend(token, user.getUserId(), new FriendCallback() {
+        friendService.removeFriend(token, user.getUserId(), new FriendCallback() {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND", "Friend removed: " + response.getMessage());
@@ -118,7 +128,7 @@ public class Controller extends ViewModel {
             Log.e("FRIEND_SEARCH", "No JWT token available.");
             return;
         }
-        friendsService.searchFriends(token, query, new FriendSearchCallback() {
+        friendService.searchFriends(token, query, new FriendSearchCallback() {
             @Override
             public void onSuccess(FriendSearchResponse response) {
                 if (response.getUsers() != null) {
@@ -139,7 +149,7 @@ public class Controller extends ViewModel {
             Log.e("FRIEND_REQ", "No JWT token available.");
             return;
         }
-        friendsService.listFriendRequests(token, new FriendRequestsCallback() {
+        friendService.listFriendRequests(token, new FriendRequestsCallback() {
             @Override
             public void onSuccess(FriendRequestsResponse response) {
                 if (response.getRequests() != null) {
@@ -160,7 +170,7 @@ public class Controller extends ViewModel {
             Log.e("FRIEND_HANDLE", "No JWT token available.");
             return;
         }
-        friendsService.handleFriendRequest(token, sender.getUserId(), approve, new FriendCallback() {
+        friendService.handleFriendRequest(token, sender.getUserId(), approve, new FriendCallback() {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND_HANDLE", "Request handled: " + response.getMessage());
@@ -239,9 +249,8 @@ public class Controller extends ViewModel {
 
                     listFriends();
                     listFriendRequests();
-
-                    // list saved books
-                    // list groups
+                    listSavedBooks();
+                    listUserGroups();
                 } else {
                     Log.e("LOGIN_FAILED", "Invalid credentials");
                 }
@@ -264,11 +273,12 @@ public class Controller extends ViewModel {
             Log.e("READING_GROUP", "No JWT token available.");
             return;
         }
-        ensureReadingService();
+//        ensureReadingService();
         readingService.joinGroup(token, groupId, new ReadingService.ReadingCallback<BasicResponse>() {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_JOIN", "Joined group: " + response.getMessage());
+                listUserGroups();
             }
             @Override
             public void onFailure(Exception e) {
@@ -287,6 +297,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_RECOMMEND", "Recommendation: " + response.getMessage());
+                listGroupRecommendations(groupId);
             }
             @Override
             public void onFailure(Exception e) {
@@ -307,6 +318,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_RECOMMEND", "Handle rec: " + response.getMessage());
+                listGroupRecommendations(groupId);
             }
             @Override
             public void onFailure(Exception e) {
@@ -365,6 +377,7 @@ public class Controller extends ViewModel {
             public void onSuccess(CreateGroupResponse response) {
                 if (response.isSuccess()) {
                     Log.d("READING_GROUP_CREATE", "Created group " + response.getGroupId() + ": " + response.getMessage());
+                    listUserGroups();
                 } else {
                     Log.e("READING_GROUP_CREATE", "Group not created. " + response.getMessage());
                 }
@@ -375,4 +388,73 @@ public class Controller extends ViewModel {
             }
         });
     }
+
+    public void listSavedBooks() {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("BOOK_LIST", "No JWT token available.");
+            return;
+        }
+        if (bookService == null) {
+            API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
+            bookService = new BookService(api);
+        }
+        bookService.listUserSavedBooks(token, new BookService.BookCallback() {
+            @Override
+            public void onSuccess(BookResponse response) {
+                Log.d("BOOK_LIST", "Found " + response.getTotalItems() + " saved books.");
+                // e.g. Store them somewhere:
+//                Store.getInstance().setSavedBooks(response.getItems());
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("BOOK_LIST", "Failed to load saved books", e);
+            }
+        });
+    }
+
+    public void listGroupRecommendations(Integer groupId) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("GROUP_REC", "No JWT token available.");
+            return;
+        }
+        if (bookService == null) {
+            API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
+            bookService = new BookService(api);
+        }
+        readingService.listGroupRecommendations(token, groupId, new BookService.BookCallback() {
+            @Override
+            public void onSuccess(BookResponse response) {
+                Log.d("GROUP_REC", "Found " + response.getTotalItems() + " recommended books.");
+//                Store.getInstance().setRecommendedBooks(response.getItems());
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("GROUP_REC", "Failed to load recommendations", e);
+            }
+        });
+    }
+    public void listUserGroups() {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("GROUP_LIST", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+        readingService.listUserGroups(token, new ReadingService.ReadingCallback<GroupListResponse>() {
+            @Override
+            public void onSuccess(GroupListResponse response) {
+                if (response != null && response.getGroups() != null) {
+                    Log.d("GROUP_LIST", "Found " + response.getGroups().size() + " groups.");
+                    // Store.getInstance().setJoinedGroups(response.getGroups());
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("GROUP_LIST", "Failed to list user groups", e);
+            }
+        });
+    }
+
 }

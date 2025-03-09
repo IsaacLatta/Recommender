@@ -68,6 +68,26 @@ public class BookService {
         });
     }
 
+    public void listUserSavedBooks(String jwtToken, final BookCallback callback) {
+        String authHeader = "Bearer " + jwtToken;
+        Call<BookResponse> call = bookApi.getUserBooks(authHeader, api.getKey());
+        call.enqueue(new Callback<BookResponse>() {
+            @Override
+            public void onResponse(Call<BookResponse> call, Response<BookResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(new Exception("Fetch saved books failed, code: " + response.code()));
+                }
+            }
+            @Override
+            public void onFailure(Call<BookResponse> call, Throwable t) {
+                callback.onFailure(new Exception(t));
+            }
+        });
+    }
+
+
     public interface BookCallback {
         void onSuccess(BookResponse response);
         void onFailure(Exception e);

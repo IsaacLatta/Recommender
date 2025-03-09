@@ -18,9 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class BackendTest {
     @Test
     public void testLogin() throws InterruptedException {
-        API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
-        AuthService auth = new AuthService(api);
-        Controller controller = new Controller(auth);
+        Controller controller = new Controller();
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -40,10 +38,7 @@ public class BackendTest {
 
     @Test
     public void testBookSearch() throws InterruptedException {
-        API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
-        BookService bookService = new BookService(api);
-        Controller controller = new Controller(bookService);
-        Store.getInstance().setToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDE3NjI0NTV9.mCuRj4Wzat_lrCy6oC0EPNX0eUV_O5fZwgQYhshnYaA");
+        Controller controller = new Controller();
 
         CountDownLatch latch =  new CountDownLatch(1);
 
