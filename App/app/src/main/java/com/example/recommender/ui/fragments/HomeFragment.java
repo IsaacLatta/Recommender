@@ -15,6 +15,9 @@ import android.widget.EditText;
 
 import com.example.recommender.Controller;
 import com.example.recommender.R;
+import com.example.recommender.model.entity.Book;
+
+import java.util.ArrayList;
 
 
 public class HomeFragment extends Fragment {
@@ -22,6 +25,7 @@ public class HomeFragment extends Fragment {
 
     private Button searchButton;
     private EditText searchBarText;
+    private ArrayList<Book> books;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,7 +38,8 @@ public class HomeFragment extends Fragment {
         searchButton.setOnClickListener(v ->{
             String search_input = searchBarText.getText().toString().trim();
             Log.d("HOME_SEARCH_", search_input);
-           // Controller.getInstance().searchBook(search_input);
+           Controller.getInstance().searchBook(search_input);
+
         });
         return view;
 
