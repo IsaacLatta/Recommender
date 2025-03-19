@@ -1,5 +1,7 @@
 package com.example.recommender.model.entity;
 
+import com.example.recommender.model.response.GroupInfo;
+
 import java.util.List;
 
 public class Store {
@@ -7,11 +9,15 @@ public class Store {
     private String userId;
     private String username;
     private String token;
+
+    private List<Book> savedBooks;
     private List<Book> searchedBooks;
     private List<User> searchedUsers;
     private List<User> friends;
     private List<User> friendRequests;
+    private List<GroupInfo> joinedGroups;
 
+    private List<ReadingGroup> searchedReadingGroups;
     private Store() {
         userId = "";
     }
@@ -30,6 +36,11 @@ public class Store {
     public String getToken() {return token;}
     public void setToken(String token) {this.token = token;}
     public void setSearchedBooks(List<Book> books) {this.searchedBooks = books;}
+
+    public void setSavedBooks(List<Book> books) {this.savedBooks = books;}
+    public void setSearchedReadingGroups(List<ReadingGroup> groups) {this.searchedReadingGroups = groups;}
+    public List<ReadingGroup> getSearchedReadingGroups() {return searchedReadingGroups;}
+    public List<Book> getSavedBooks() {return savedBooks;}
     public List<Book> getSearchedBooks() {return searchedBooks;}
     public List<User> getSearchedUsers() {return searchedUsers;}
     public void setSearchedUsers(List<User> users) {this.searchedUsers = users;}
@@ -37,4 +48,14 @@ public class Store {
     public void setFriends(List<User> friends) {this.friends = friends;}
     public List<User> getFriendRequests() {return friendRequests;}
     public void setFriendRequests(List<User> friend_requests) {this.friendRequests = friend_requests;}
+
+    public void setJoinedGroups(List<GroupInfo> groups) {this.joinedGroups = groups;}
+
+    public void setRecommendedBooks(List<Book> books, int groupId) {
+        for (GroupInfo group: joinedGroups) {
+            if(group.getGroupId() == groupId) {
+                group.setRecommendedBooks(books);
+            }
+        }
+    }
 }

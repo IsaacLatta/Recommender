@@ -1,6 +1,9 @@
 package com.example.recommender.model.response;
 
+import com.example.recommender.model.entity.Book;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class GroupInfo {
 
@@ -18,6 +21,9 @@ public class GroupInfo {
 
     @SerializedName("joined_at")
     private String joinedAt; // or use a Date/DateTime type if you prefer parsing
+
+    @SerializedName("recommendations")
+    private List<Book> recommendedBooks;
 
     public int getGroupId() {
         return groupId;
@@ -37,5 +43,13 @@ public class GroupInfo {
 
     public String getJoinedAt() {
         return joinedAt;
+    }
+
+    public List<Book> getRecommendedBooks() {
+        return recommendedBooks;
+    }
+
+    public void setRecommendedBooks(List<Book> books) {
+        this.recommendedBooks = books;
     }
 }

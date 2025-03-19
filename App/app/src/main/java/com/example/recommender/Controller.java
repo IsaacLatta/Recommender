@@ -30,16 +30,22 @@ public class Controller extends ViewModel {
     private BookService bookService;
     private ReadingService readingService;
 
-    public Controller(AuthService authService) {
-        this.authService = authService;
+    private static Controller instance;
+
+    public static synchronized Controller getInstance() {
+        if (instance == null) {
+            instance = new Controller();
+        }
+        return instance;
     }
 
-    public Controller(BookService bookService) {
-        this.bookService = bookService;
-    }
-
-    public Controller(FriendsService friendsService) {
-        this.friendService = friendsService;
+    // Make constructor private so no one can do new Controller()
+    private Controller() {
+        API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
+        friendService   = new FriendsService(api);
+        authService     = new AuthService(api);
+        bookService     = new BookService(api);
+        readingService  = new ReadingService(api);
     }
 
     public void setBookService(BookService bookService) {
@@ -49,21 +55,7 @@ public class Controller extends ViewModel {
 
     public void setReadingService(ReadingService readingService) {this.readingService = readingService;}
     public void setFriendService(FriendsService friendService) {this.friendService = friendService;}
-    public Controller() {
-        API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
-        if (friendService == null) {
-            friendService = new FriendsService(api);
-        }
-        if(readingService == null) {
-            readingService = new ReadingService(api);
-        }
-        if(bookService == null) {
-            bookService  = new BookService(api);
-        }
-        if(authService == null) {
-            authService = new AuthService(api);
-        }
-    }
+
     public void listFriends() {
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
@@ -337,7 +329,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(SearchGroupsResponse response) {
                 if (response.getGroups() != null) {
-//                    Store.getInstance().setSearchedReadingGroups(response.getGroups());
+                    Store.getInstance().setSearchedReadingGroups(response.getGroups());
                     Log.d("READING_GROUP_SEARCH", "Found " + response.getGroups().size() + " groups.");
                 }
             }
@@ -403,8 +395,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BookResponse response) {
                 Log.d("BOOK_LIST", "Found " + response.getTotalItems() + " saved books.");
-                // e.g. Store them somewhere:
-//                Store.getInstance().setSavedBooks(response.getItems());
+                Store.getInstance().setSavedBooks(response.getItems());
             }
             @Override
             public void onFailure(Exception e) {
@@ -427,7 +418,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BookResponse response) {
                 Log.d("GROUP_REC", "Found " + response.getTotalItems() + " recommended books.");
-//                Store.getInstance().setRecommendedBooks(response.getItems());
+                Store.getInstance().setRecommendedBooks(response.getItems(), groupId);
             }
             @Override
             public void onFailure(Exception e) {
@@ -447,7 +438,7 @@ public class Controller extends ViewModel {
             public void onSuccess(GroupListResponse response) {
                 if (response != null && response.getGroups() != null) {
                     Log.d("GROUP_LIST", "Found " + response.getGroups().size() + " groups.");
-                    // Store.getInstance().setJoinedGroups(response.getGroups());
+                     Store.getInstance().setJoinedGroups(response.getGroups());
                 }
             }
             @Override

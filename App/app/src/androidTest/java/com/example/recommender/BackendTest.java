@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class BackendTest {
     @Test
     public void testLogin() throws InterruptedException {
-        Controller controller = new Controller();
+        Controller controller = Controller.getInstance();
 
         CountDownLatch latch = new CountDownLatch(1);
 
@@ -38,7 +38,7 @@ public class BackendTest {
 
     @Test
     public void testBookSearch() throws InterruptedException {
-        Controller controller = new Controller();
+        Controller controller = Controller.getInstance();
 
         CountDownLatch latch =  new CountDownLatch(1);
 

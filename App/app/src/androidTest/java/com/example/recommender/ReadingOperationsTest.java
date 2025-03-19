@@ -24,7 +24,7 @@ public class ReadingOperationsTest {
 
     @Before
     public void setup() {
-        controller = new Controller();
+        controller = Controller.getInstance();
         controller.login("alice", "password123");
     }
 

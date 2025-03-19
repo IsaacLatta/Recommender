@@ -1,5 +1,6 @@
 package com.example.recommender;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,9 +22,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
-        AuthService auth = new AuthService(api);
-        this.controller = new Controller(auth);
+        this.controller = Controller.getInstance();
 
         Log.d("LOGIN_INFO", "Auth Service and Controller Created!");
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -39,5 +38,7 @@ public class MainActivity extends AppCompatActivity {
         String username_string = usr.getText().toString();
         String password_string = pass.getText().toString();
         controller.login(username_string, password_string);
+        Intent intent = new Intent(this, MainScreen.class);
+        startActivity(intent);
     }
 }

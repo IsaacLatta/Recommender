@@ -20,7 +20,7 @@ public class BookOperationsTest {
     @Before
     public void setup() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        controller = new Controller();
+        controller = Controller.getInstance();
         String username = "alice", password = "password123";
         Log.d("LOGIN_TEST", "Checking valid credentials: " + username + ", " + password);
 

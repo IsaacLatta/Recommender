@@ -28,8 +28,7 @@ public class FriendOperationsTest {
         API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
         String username = "alice", password = "password123";
 
-        controller = new Controller(new AuthService(api));
-        controller.setFriendService(new FriendsService(api));
+        controller = Controller.getInstance();
         Log.d("LOGIN_TEST", "Checking valid credentials: " + username + ", " + password);
 
         controller.login(username, password);
