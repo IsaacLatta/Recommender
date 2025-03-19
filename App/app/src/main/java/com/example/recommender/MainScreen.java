@@ -1,6 +1,7 @@
 package com.example.recommender;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.activity.EdgeToEdge;
 
@@ -17,26 +18,22 @@ public class MainScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main_screen);
-        Fragment homefrag = new HomeFragment();
-        Fragment groupfrag = new GroupsFragment();
-        Fragment addfrag = new AddFragment();
-        Fragment ratefrag = new RateFragment();
-        Fragment savedfrag = new SavedFragment();
         setCurrentFragment(new HomeFragment());
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.home) {
-                setCurrentFragment(homefrag);
+                setCurrentFragment(new HomeFragment());
             } else if (id == R.id.groups) {
-                setCurrentFragment(groupfrag);
+                Log.d("GROUPS_TAB", "Switching to the groups fragment");
+                setCurrentFragment(new GroupsFragment());
             } else if (id == R.id.add) {
-                setCurrentFragment(addfrag);
+                setCurrentFragment(new AddFragment());
             } else if (id == R.id.rate) {
-                setCurrentFragment(ratefrag);
+                setCurrentFragment(new RateFragment());
             } else if (id == R.id.saved) {
-                setCurrentFragment(savedfrag);
+                setCurrentFragment(new SavedFragment());
             }
             return true;
         });
@@ -44,6 +41,7 @@ public class MainScreen extends AppCompatActivity {
     }
 
     // Helper method to switch fragments in the container
+
 
     private void setCurrentFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
