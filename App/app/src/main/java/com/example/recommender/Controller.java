@@ -24,6 +24,8 @@ import com.example.recommender.network.service.FriendsService.FriendRequestsCall
 import com.example.recommender.network.service.FriendsService.FriendSearchCallback;
 import com.example.recommender.network.service.ReadingService;
 
+import java.util.List;
+
 public class Controller extends ViewModel {
     private FriendsService friendService;
     private AuthService authService;
@@ -66,6 +68,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(FriendListResponse response) {
                 if (response.getFriends() != null) {
+                    Store.getInstance().notifyListeners();
                     Store.getInstance().setFriends(response.getFriends());
                     Log.d("FRIEND_LIST", "Total friends: " + Store.getInstance().getFriends().size());
                 }
@@ -86,6 +89,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(com.example.recommender.model.response.BasicResponse response) {
                 Log.d("FRIEND", "Friend request sent: " + response.getMessage());
+                Store.getInstance().notifyListeners();
                 listFriends(); // Update the friend list
             }
             @Override
@@ -105,6 +109,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND", "Friend removed: " + response.getMessage());
+                Store.getInstance().notifyListeners();
                 listFriends(); // Update the friend list
             }
             @Override
@@ -126,6 +131,7 @@ public class Controller extends ViewModel {
                 if (response.getUsers() != null) {
                     Store.getInstance().setSearchedUsers(response.getUsers());
                     Log.d("FRIEND_SEARCH", "Found " + Store.getInstance().getSearchedUsers().size() + " users.");
+                    Store.getInstance().notifyListeners();
                 }
             }
             @Override
@@ -166,7 +172,24 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND_HANDLE", "Request handled: " + response.getMessage());
-                listFriendRequests(); // update the friend requests list
+                List<User> currentRequests = Store.getInstance().getFriendRequests();
+                if (currentRequests != null) {
+                    currentRequests.remove(sender);
+                }
+                List<User> currentFriends = Store.getInstance().getFriends();
+                if (currentFriends != null && !currentFriends.contains(sender)) {
+                    if (approve) {
+                        currentFriends.add(sender);
+                    }
+                    else {
+                        currentFriends.remove(sender);
+                    }
+                }
+                Store.getInstance().notifyListeners();
+                listFriendRequests();
+                if (approve) {
+                    listFriends();
+                }
             }
             @Override
             public void onFailure(Exception e) {
@@ -193,6 +216,7 @@ public class Controller extends ViewModel {
                 Log.d("BOOK_SEARCH", "Found " + response.getTotalItems() + " items.");
                 if (response.getItems() != null) {
                     Store.getInstance().setSearchedBooks(response.getItems());
+                    Store.getInstance().notifyListeners();
                 }
             }
             @Override
@@ -270,6 +294,7 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_JOIN", "Joined group: " + response.getMessage());
+                Store.getInstance().notifyListeners();
                 listUserGroups();
             }
             @Override
@@ -290,6 +315,7 @@ public class Controller extends ViewModel {
             public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_RECOMMEND", "Recommendation: " + response.getMessage());
                 listGroupRecommendations(groupId);
+                Store.getInstance().notifyListeners();
             }
             @Override
             public void onFailure(Exception e) {
@@ -311,6 +337,7 @@ public class Controller extends ViewModel {
             public void onSuccess(BasicResponse response) {
                 Log.d("READING_GROUP_RECOMMEND", "Handle rec: " + response.getMessage());
                 listGroupRecommendations(groupId);
+                Store.getInstance().notifyListeners();
             }
             @Override
             public void onFailure(Exception e) {
@@ -330,6 +357,7 @@ public class Controller extends ViewModel {
             public void onSuccess(SearchGroupsResponse response) {
                 if (response.getGroups() != null) {
                     Store.getInstance().setSearchedReadingGroups(response.getGroups());
+                    Store.getInstance().notifyListeners();
                     Log.d("READING_GROUP_SEARCH", "Found " + response.getGroups().size() + " groups.");
                 }
             }
@@ -370,6 +398,7 @@ public class Controller extends ViewModel {
                 if (response.isSuccess()) {
                     Log.d("READING_GROUP_CREATE", "Created group " + response.getGroupId() + ": " + response.getMessage());
                     listUserGroups();
+                    Store.getInstance().notifyListeners();
                 } else {
                     Log.e("READING_GROUP_CREATE", "Group not created. " + response.getMessage());
                 }
@@ -396,6 +425,7 @@ public class Controller extends ViewModel {
             public void onSuccess(BookResponse response) {
                 Log.d("BOOK_LIST", "Found " + response.getTotalItems() + " saved books.");
                 Store.getInstance().setSavedBooks(response.getItems());
+                Store.getInstance().notifyListeners();
             }
             @Override
             public void onFailure(Exception e) {
@@ -419,6 +449,7 @@ public class Controller extends ViewModel {
             public void onSuccess(BookResponse response) {
                 Log.d("GROUP_REC", "Found " + response.getTotalItems() + " recommended books.");
                 Store.getInstance().setRecommendedBooks(response.getItems(), groupId);
+                Store.getInstance().notifyListeners();
             }
             @Override
             public void onFailure(Exception e) {
@@ -439,6 +470,7 @@ public class Controller extends ViewModel {
                 if (response != null && response.getGroups() != null) {
                     Log.d("GROUP_LIST", "Found " + response.getGroups().size() + " groups.");
                      Store.getInstance().setJoinedGroups(response.getGroups());
+                    Store.getInstance().notifyListeners();
                 }
             }
             @Override

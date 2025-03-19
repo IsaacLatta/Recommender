@@ -27,7 +27,6 @@ public class FriendRequestsAdapter extends RecyclerView.Adapter<FriendRequestsAd
     @NonNull
     @Override
     public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // item_friend_request.xml must exist in res/layout
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_friend_request, parent, false);
         return new RequestViewHolder(view);

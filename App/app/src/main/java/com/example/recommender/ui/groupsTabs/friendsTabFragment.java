@@ -15,13 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.recommender.Controller;
 import com.example.recommender.R;
 import com.example.recommender.model.entity.Store;
+import com.example.recommender.model.entity.StoreListener;
 import com.example.recommender.model.entity.User;
 import com.example.recommender.ui.adapter.FriendRequestsAdapter;
 import com.example.recommender.ui.adapter.FriendsAdapter;
 
 import java.util.List;
 
-public class friendsTabFragment extends Fragment {
+public class friendsTabFragment extends Fragment implements StoreListener {
 
     private RecyclerView rvFriendRequests;
     private RecyclerView rvFriends;
@@ -74,8 +75,19 @@ public class friendsTabFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Store.getInstance().addListener(this);
         Controller.getInstance().listFriends();        // triggers an async call, result in Store
         Controller.getInstance().listFriendRequests(); // triggers an async call, result in Store
+        updateUIFromStore();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Store.getInstance().removeListener(this);
+    }
+    @Override
+    public void onStoreUpdated() {
         updateUIFromStore();
     }
 

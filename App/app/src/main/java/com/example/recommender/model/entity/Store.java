@@ -2,6 +2,7 @@ package com.example.recommender.model.entity;
 
 import com.example.recommender.model.response.GroupInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Store {
@@ -17,9 +18,27 @@ public class Store {
     private List<User> friendRequests;
     private List<GroupInfo> joinedGroups;
 
+    private List<StoreListener> listeners;
     private List<ReadingGroup> searchedReadingGroups;
     private Store() {
         userId = "";
+        listeners = new ArrayList<>();
+    }
+
+    public void addListener(StoreListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeListener(StoreListener listener) {
+        listeners.remove(listener);
+    }
+
+    public void notifyListeners() {
+        for (StoreListener listener : listeners) {
+            listener.onStoreUpdated();
+        }
     }
 
     public static synchronized Store getInstance() {
@@ -59,3 +78,4 @@ public class Store {
         }
     }
 }
+
