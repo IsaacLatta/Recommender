@@ -34,6 +34,29 @@
         app:layout_constraintBottom_toBottomOf="@+id/etFriendSearch"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Search Results Label -->
+    <TextView
+        android:id="@+id/tvUserSearchResultsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Results"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/etFriendSearch"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Search Results List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvUserSearchResults"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvUserSearchResultsLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Friend Requests Label -->
     <TextView
         android:id="@+id/tvFriendRequestsLabel"
@@ -42,9 +65,9 @@
         android:text="Pending Friend Requests"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/etFriendSearch"
+        app:layout_constraintTop_toBottomOf="@+id/rvUserSearchResults"
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Friend Requests List -->
@@ -52,10 +75,10 @@
         android:id="@+id/rvFriendRequests"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/tvFriendRequestsLabel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Friends Label -->
     <TextView
@@ -65,7 +88,7 @@
         android:text="Your Friends"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"
         app:layout_constraintTop_toBottomOf="@+id/rvFriendRequests"
         app:layout_constraintStart_toStartOf="parent" />
@@ -74,11 +97,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFriends"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@+id/tvFriendsLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
