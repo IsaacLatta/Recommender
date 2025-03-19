@@ -2,6 +2,8 @@ package com.example.recommender.model.entity;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class User {
     public User() {
     }
@@ -22,4 +24,19 @@ public class User {
     public String getUsername() {
         return username;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userId == user.userId; // or userId.equals(user.userId) if it's a String
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
+    }
+
+
 }

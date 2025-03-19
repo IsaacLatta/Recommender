@@ -109,8 +109,16 @@ public class Controller extends ViewModel {
             @Override
             public void onSuccess(BasicResponse response) {
                 Log.d("FRIEND", "Friend removed: " + response.getMessage());
+                List<User> currentFriends = Store.getInstance().getFriends();
+                if (currentFriends != null) {
+                    Log.d("FRIEND_REMOVE", "current friends are not null");
+                    currentFriends.remove(user);
+                }
+                else {
+                    Log.d("FRIEND_REMOVE", "current friends are null");
+                }
                 Store.getInstance().notifyListeners();
-                listFriends(); // Update the friend list
+                listFriends();
             }
             @Override
             public void onFailure(Exception e) {
