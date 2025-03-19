@@ -158,3 +158,26 @@ def handle_friend_request():
     except Exception as e:
         current_app.logger.error(f"Error in handle_friend_request: {e}")
         return jsonify({"success": False, "error": "Server error"}), 500
+
+@friends_bp.route('/friend/request/send', methods=['POST'])
+def send_friend_request():
+    user_id = get_current_user()
+    if not user_id:
+        return jsonify({"success": False, "error": "Invalid token"}), 401
+
+    data = request.get_json()
+    receiver_id = data.get("receiver_id")
+    if not receiver_id:
+        return jsonify({"success": False, "error": "receiver_id is required"}), 400
+
+    try:
+        run_query(
+            "INSERT INTO friend_requests (sender_id, receiver_id, status) VALUES (%s, %s, 'pending')",
+            (user_id, receiver_id),
+            fetch=False,
+            commit=True
+        )
+        return jsonify({"success": True, "message": "Friend request sent successfully"}), 200
+    except Exception as e:
+        current_app.logger.error(f"Error in send_friend_request: {e}")
+        return jsonify({"success": False, "error": "Server error"}), 500

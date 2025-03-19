@@ -48,7 +48,7 @@ def search_book():
         "items": book_list,
         "success": True
     }), 200
-
+2
 @books_bp.route('/book', methods=['POST'])  
 def manage_book_actions():
     user_id = get_current_user()
