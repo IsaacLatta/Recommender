@@ -1,4 +1,4 @@
-package com.example.recommender.groupsTabs;
+package com.example.recommender.ui.groupsTabs;
 
 import android.os.Bundle;
 
@@ -11,12 +11,13 @@ import android.view.ViewGroup;
 import com.example.recommender.R;
 
 
-public class requestTabFragment extends Fragment {
+public class groupsTabFragment extends Fragment {
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_request_tab, container, false);
+        return inflater.inflate(R.layout.fragment_groups_tab, container, false);
     }
 }

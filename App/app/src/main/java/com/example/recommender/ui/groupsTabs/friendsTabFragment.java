@@ -1,4 +1,4 @@
-package com.example.recommender.groupsTabs;
+package com.example.recommender.ui.groupsTabs;
 
 import android.os.Bundle;
 

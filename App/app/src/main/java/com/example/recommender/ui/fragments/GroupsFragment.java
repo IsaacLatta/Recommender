@@ -1,4 +1,4 @@
-package com.example.recommender;
+package com.example.recommender.ui.fragments;
 
 import android.os.Bundle;
 
@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.recommender.R;
+import com.example.recommender.ui.GroupsViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 
 

@@ -9,6 +9,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.recommender.ui.fragments.AddFragment;
+import com.example.recommender.ui.fragments.GroupsFragment;
+import com.example.recommender.ui.fragments.HomeFragment;
+import com.example.recommender.ui.fragments.RateFragment;
+import com.example.recommender.ui.fragments.SavedFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainScreen extends AppCompatActivity {

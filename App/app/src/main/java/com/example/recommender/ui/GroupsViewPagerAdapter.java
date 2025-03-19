@@ -1,12 +1,13 @@
-package com.example.recommender;
+package com.example.recommender.ui;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.recommender.groupsTabs.friendsTabFragment;
-import com.example.recommender.groupsTabs.groupsTabFragment;
-import com.example.recommender.groupsTabs.requestTabFragment;
+import com.example.recommender.ui.fragments.GroupsFragment;
+import com.example.recommender.ui.groupsTabs.friendsTabFragment;
+import com.example.recommender.ui.groupsTabs.groupsTabFragment;
+import com.example.recommender.ui.groupsTabs.requestTabFragment;
 
 public class GroupsViewPagerAdapter extends FragmentStateAdapter {
 
