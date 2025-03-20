@@ -29,6 +29,7 @@ public class MainScreen extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.home) {
+                Log.d("MAINSCREEN", "switching to home");
                 setCurrentFragment(new HomeFragment());
             } else if (id == R.id.groups) {
                 Log.d("GROUPS_TAB", "Switching to the groups fragment");
