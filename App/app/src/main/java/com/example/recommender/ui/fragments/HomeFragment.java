@@ -4,14 +4,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Button;
+import android.widget.EditText;
 import com.example.recommender.Controller;
 import com.example.recommender.R;
 import com.example.recommender.model.entity.Book;
@@ -24,38 +24,34 @@ import java.util.List;
 
 public class HomeFragment extends Fragment implements StoreListener {
 
-    private SearchView searchView;
+    private EditText etBookSearch;
+    private Button btnSearchBook;
     private RecyclerView rvSearchResults;
     private BookSearchAdapter adapter;
-    // Local list of books is managed by the Store now
     private List<Book> books = new ArrayList<>();
 
+    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the modern layout for HomeFragment
+        // Inflate the updated layout (fragment_home.xml)
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        searchView = view.findViewById(R.id.searchView);
+        etBookSearch = view.findViewById(R.id.etBookSearch);
+        btnSearchBook = view.findViewById(R.id.btnSearchBook);
         rvSearchResults = view.findViewById(R.id.rvSearchResults);
 
+        // Set up RecyclerView with adapter
         adapter = new BookSearchAdapter(books);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
         rvSearchResults.setAdapter(adapter);
 
-        // Listen for search query submissions and pass them to the Controller
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d("HOME_SEARCH", "Query submitted: " + query);
+        // Set click listener for search button
+        btnSearchBook.setOnClickListener(v -> {
+            String query = etBookSearch.getText().toString().trim();
+            if (!query.isEmpty()) {
+                Log.d("HOME_SEARCH", "Search query: " + query);
                 Controller.getInstance().searchBook(query);
-                // Optionally clear focus to hide the keyboard
-                searchView.clearFocus();
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // Optionally update live search here
-                return false;
+            } else {
+                Log.d("HOME_SEARCH", "Empty search query");
             }
         });
         return view;
@@ -64,27 +60,25 @@ public class HomeFragment extends Fragment implements StoreListener {
     @Override
     public void onResume() {
         super.onResume();
-        // Register this fragment as a listener to store updates
+        // Register to receive updates from the Store
         Store.getInstance().addListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // Remove listener when the fragment is paused
+        // Unregister the listener to avoid leaks
         Store.getInstance().removeListener(this);
     }
 
-    // This method is called whenever Store.notifyListeners() is invoked.
+    // Called whenever the Store notifies its listeners
     @Override
     public void onStoreUpdated() {
-        // Update adapter with new searched books from the Store
         List<Book> searchedBooks = Store.getInstance().getSearchedBooks();
         if (searchedBooks != null) {
             adapter.updateData(searchedBooks);
             Log.d("HOME_SEARCH", "Adapter updated with " + searchedBooks.size() + " books.");
         } else {
-            // Clear adapter if no books were found
             adapter.updateData(new ArrayList<>());
             Log.d("HOME_SEARCH", "No books found, clearing adapter.");
         }
