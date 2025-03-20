@@ -240,7 +240,7 @@ def list_recommendations():
             extra_fields=["status", "suggested_by"]
         )
 
-        return jsonify({"success": True, "books": results}), 200
+        return jsonify({"success": True, "items": results}), 200
 
     except Exception as e:
         current_app.logger.error(f"Error in list_recommendations: {e}")
