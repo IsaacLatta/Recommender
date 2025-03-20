@@ -35,5 +35,31 @@
             android:layout_height="wrap_content"
             android:text="Status"
             android:layout_marginTop="4dp" />
+
+        <!-- Admin buttons layout -->
+        <LinearLayout
+            android:id="@+id/adminButtonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:layout_marginTop="8dp">
+
+            <ImageButton
+                android:id="@+id/btnApprove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_approve"
+                android:contentDescription="Approve" />
+
+            <ImageButton
+                android:id="@+id/btnDeny"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_deny"
+                android:contentDescription="Deny"
+                android:layout_marginStart="16dp" />
+
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

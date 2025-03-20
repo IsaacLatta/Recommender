@@ -47,7 +47,7 @@ public class Book {
     public String getDescription() {
         return description;
     }
-    public String getExternalID() {return external_id;}
+    public String getExternalId() {return external_id;}
 
     public Integer getRating() {return rating;}
 

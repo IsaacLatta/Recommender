@@ -65,7 +65,7 @@ public interface ReadingApi {
     @GET("reading/group/recommend/list")
     Call<BookResponse> listGroupRecommendations(
             @Header("Authorization") String auth,
-            @Header("group_id") Integer groupId,
+            @Query("group_id") Integer groupId,
             @Header("x-api-key") String apiKey
     );
 
