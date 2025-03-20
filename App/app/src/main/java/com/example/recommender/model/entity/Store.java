@@ -70,6 +70,8 @@ public class Store {
 
     public void setJoinedGroups(List<GroupInfo> groups) {this.joinedGroups = groups;}
 
+    public List<GroupInfo> getJoinedGroups() {return joinedGroups;}
+
     public void setRecommendedBooks(List<Book> books, int groupId) {
         for (GroupInfo group: joinedGroups) {
             if(group.getGroupId() == groupId) {
