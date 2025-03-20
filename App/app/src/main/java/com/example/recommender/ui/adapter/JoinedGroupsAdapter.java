@@ -9,18 +9,21 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.recommender.Controller;
 import com.example.recommender.R;
 import com.example.recommender.model.response.GroupInfo;
+import com.example.recommender.ui.groupsTabs.GroupDetailFragment;
+import com.example.recommender.ui.groupsTabs.groupsTabFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JoinedGroupsAdapter extends RecyclerView.Adapter<JoinedGroupsAdapter.GroupViewHolder> {
 
+    private groupsTabFragment parentFragment;
     private List<GroupInfo> groupsList;
 
-    public JoinedGroupsAdapter(List<GroupInfo> groupsList) {
+    public JoinedGroupsAdapter(groupsTabFragment parentFragment, List<GroupInfo> groupsList) {
+        this.parentFragment = parentFragment;
         this.groupsList = (groupsList != null) ? groupsList : new ArrayList<>();
     }
 
@@ -35,7 +38,7 @@ public class JoinedGroupsAdapter extends RecyclerView.Adapter<JoinedGroupsAdapte
     @Override
     public void onBindViewHolder(@NonNull GroupViewHolder holder, int position) {
         GroupInfo group = groupsList.get(position);
-        holder.bind(group);
+        holder.bind(group, parentFragment);
     }
 
     @Override
@@ -44,7 +47,7 @@ public class JoinedGroupsAdapter extends RecyclerView.Adapter<JoinedGroupsAdapte
     }
 
     public void updateData(List<GroupInfo> newGroups) {
-        if(newGroups == null) {
+        if (newGroups == null) {
             newGroups = new ArrayList<>();
         }
         this.groupsList = newGroups;
@@ -53,23 +56,22 @@ public class JoinedGroupsAdapter extends RecyclerView.Adapter<JoinedGroupsAdapte
 
     static class GroupViewHolder extends RecyclerView.ViewHolder {
         TextView tvGroupName;
-        TextView tvGroupRole; // Used to display the user's role
+        TextView tvGroupRole; // repurposed to show role info
         Button btnViewGroup;
 
         public GroupViewHolder(@NonNull View itemView) {
             super(itemView);
             tvGroupName = itemView.findViewById(R.id.tvGroupName);
-            tvGroupRole = itemView.findViewById(R.id.tvMemberCount); // repurposing this TextView to show role info
+            tvGroupRole = itemView.findViewById(R.id.tvMemberCount);
             btnViewGroup = itemView.findViewById(R.id.btnJoinOrView);
         }
 
-        public void bind(GroupInfo group) {
+        public void bind(GroupInfo group, groupsTabFragment parentFragment) {
             tvGroupName.setText(group.getGroupName());
             tvGroupRole.setText("Role: " + group.getRole());
             btnViewGroup.setText("View");
             btnViewGroup.setOnClickListener(v -> {
-                // TODO: Implement navigation to detailed group view.
-                // e.g., Controller.getInstance().openGroupDetail(group.getGroupId());
+                parentFragment.openGroupDetails(group.getGroupId());
             });
         }
     }

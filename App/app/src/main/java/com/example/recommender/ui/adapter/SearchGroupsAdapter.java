@@ -68,7 +68,6 @@ public class SearchGroupsAdapter extends RecyclerView.Adapter<SearchGroupsAdapte
             tvStatus.setText("Not joined");
             btnJoinGroup.setText("Join");
             btnJoinGroup.setOnClickListener(v -> {
-                // Call the controller to join the group
                 Controller.getInstance().joinReadingGroup(group.getGroupId());
             });
         }

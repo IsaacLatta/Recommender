@@ -1,5 +1,6 @@
 package com.example.recommender.ui.groupsTabs;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,31 +41,27 @@ public class groupsTabFragment extends Fragment implements StoreListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_groups_tab, container, false);
 
-        // Bind views from layout
         rvJoinedGroups = view.findViewById(R.id.rvJoinedGroups);
         rvGroupSearchResults = view.findViewById(R.id.rvGroupSearchResults);
         etGroupSearch = view.findViewById(R.id.etGroupSearch);
         btnSearchGroup = view.findViewById(R.id.btnSearchGroup);
         fabCreateGroup = view.findViewById(R.id.fabCreateGroup);
 
-        // Setup RecyclerViews with linear layouts
         rvJoinedGroups.setLayoutManager(new LinearLayoutManager(getContext()));
         rvGroupSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize adapters with existing Store data
         List<GroupInfo> joinedGroups = Store.getInstance().getJoinedGroups();
         List<ReadingGroup> searchedGroups = Store.getInstance().getSearchedReadingGroups();
 
-        joinedGroupsAdapter = new JoinedGroupsAdapter(joinedGroups);
+        joinedGroupsAdapter = new JoinedGroupsAdapter(this, joinedGroups);
+        rvJoinedGroups.setAdapter(joinedGroupsAdapter);
         searchGroupsAdapter = new SearchGroupsAdapter(searchedGroups);
 
         rvJoinedGroups.setAdapter(joinedGroupsAdapter);
         rvGroupSearchResults.setAdapter(searchGroupsAdapter);
 
-        // On-click listener for group search button
         btnSearchGroup.setOnClickListener(v -> {
             String query = etGroupSearch.getText().toString().trim();
             if (!TextUtils.isEmpty(query)) {
@@ -75,11 +72,21 @@ public class groupsTabFragment extends Fragment implements StoreListener {
             }
         });
 
-        // On-click listener for FloatingActionButton to create a new group
         fabCreateGroup.setOnClickListener(v -> {
-            // For demonstration, we're using a hardcoded group name.
-            // In production, open a dialog to let the user enter a group name.
-            Controller.getInstance().createReadingGroup("New Group");
+            // Show a dialog to enter the group title
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Create Group");
+            final EditText input = new EditText(getContext());
+            input.setHint("Enter group title");
+            builder.setView(input);
+            builder.setPositiveButton("Create", (dialog, which) -> {
+                String groupTitle = input.getText().toString().trim();
+                if (!TextUtils.isEmpty(groupTitle)) {
+                    Controller.getInstance().createReadingGroup(groupTitle);
+                }
+            });
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+            builder.show();
         });
 
         return view;
@@ -88,9 +95,7 @@ public class groupsTabFragment extends Fragment implements StoreListener {
     @Override
     public void onResume() {
         super.onResume();
-        // Register this fragment as a listener to the Store updates.
         Store.getInstance().addListener(this);
-        // Refresh the joined groups from the backend.
         Controller.getInstance().listUserGroups();
         updateUIFromStore();
     }
@@ -114,4 +119,14 @@ public class groupsTabFragment extends Fragment implements StoreListener {
             searchGroupsAdapter.updateData(Store.getInstance().getSearchedReadingGroups());
         }
     }
+
+    public void openGroupDetails(int groupId) {
+        com.example.recommender.ui.groupsTabs.GroupDetailFragment detailFragment = com.example.recommender.ui.groupsTabs.GroupDetailFragment.newInstance(groupId);
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.flFragment, detailFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+
 }
