@@ -443,6 +443,7 @@ public class Controller extends ViewModel {
     }
 
     public void listGroupRecommendations(Integer groupId) {
+        Log.d("CONTROLLER_GROUP_RECOMM", "called");
         String token = Store.getInstance().getToken();
         if (token == null || token.isEmpty()) {
             Log.e("GROUP_REC", "No JWT token available.");
