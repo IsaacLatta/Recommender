@@ -85,12 +85,20 @@ def handle_book_recommendation():
         if not admin_check or admin_check[0]['user_id'] != user_id:
             return jsonify({"success": False, "error": "Not authorized"}), 403
 
-        run_query(
-            "UPDATE reading_list SET status = %s WHERE group_id = %s AND external_id = %s",
-            (action.lower(), group_id, external_id),
-            fetch=False,
-            commit=True
-        )
+        if action.lower() == "approve":
+            run_query(
+                "UPDATE reading_list SET status = %s WHERE group_id = %s AND external_id = %s",
+                ("approve", group_id, external_id),
+                fetch=False,
+                commit=True
+            )
+        else:  
+            run_query(
+                "DELETE FROM reading_list WHERE group_id = %s AND external_id = %s",
+                (group_id, external_id),
+                fetch=False,
+                commit=True
+            )
         return jsonify({"success": True, "message": f"Recommendation {action.lower()}"}), 200
     except Exception as e:
         current_app.logger.error(f"Error in handle_book_recommendation: {e}")
@@ -217,7 +225,9 @@ def list_recommendations():
     if not user_id:
         return jsonify({"success": False, "error": "Invalid token"}), 401
 
-    group_id = request.args.get("group_id")  # optional
+    group_id = request.args.get("group_id")
+    if not group_id:
+        group_id = request.headers.get("group_id")
 
     try:
         query = """
@@ -233,7 +243,7 @@ def list_recommendations():
 
         recs = run_query(query, tuple(params))
         if not recs:
-            return jsonify({"success": True, "books": []}), 200
+            return jsonify({"success": True, "items": []}), 200
 
         results = fetch_from_google(
             recs,
@@ -245,4 +255,3 @@ def list_recommendations():
     except Exception as e:
         current_app.logger.error(f"Error in list_recommendations: {e}")
         return jsonify({"success": False, "error": "Server error"}), 500
-

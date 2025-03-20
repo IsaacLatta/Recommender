@@ -117,12 +117,12 @@ INSERT INTO reading_group_members (group_id, user_id, role) VALUES
 (2, 2, 'admin');  -- bob is admin of "Mystery Lovers"
 
 -- Some existing reading_list data
-INSERT INTO reading_list (group_id, external_id, suggested_by, status) VALUES
-(1, 'GB_DUNE_ID', 1, 'approved'),
-(1, 'GB_NEUROMANCER_ID', 2, 'pending');
+-- INSERT INTO reading_list (group_id, external_id, suggested_by, status) VALUES
+-- (1, 'GB_DUNE_ID', 1, 'approved'),
+-- (1, 'GB_NEUROMANCER_ID', 2, 'pending');
 
-INSERT INTO reading_list (group_id, external_id, suggested_by, status)
-VALUES (1, 'GB_RECOMMEND_ID', 1, 'pending');
+-- INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+-- VALUES (1, 'GB_RECOMMEND_ID', 1, 'pending');
 INSERT INTO reading_list (group_id, external_id, suggested_by, status)
 VALUES (1, 'afCxg5sogvAC', 2, 'approve');
 INSERT INTO reading_list (group_id, external_id, suggested_by, status)
