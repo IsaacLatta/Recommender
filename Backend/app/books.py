@@ -11,7 +11,8 @@ def parse_books(data):
     for item in items:
         volume_info = item.get("volumeInfo", {})
         results.append({
-            "external_id": volume_info.get("id"),
+            "external_id": item.get("id"),
+            # "external_id": volume_info.get("id"),
             "title": volume_info.get("title", "No Title"),
             "authors": volume_info.get("authors", []),
             "publisher": volume_info.get("publisher", ""),
@@ -61,6 +62,11 @@ def manage_book_actions():
 
     save = ("save" in action)
     rate = ("rate" in action)
+    if save:
+        print("Save found")
+
+    if external_id:
+        print("ExternalId found")
 
     if not (save or rate) or not external_id:
         return jsonify({"success": False, "error": "Invalid arguments"}), 400
