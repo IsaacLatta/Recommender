@@ -64,7 +64,6 @@ public class SavedFragment extends Fragment implements StoreListener, BookClickL
         }
     }
 
-    // Implementation of BookClickListener: Open detailed view when a saved book is tapped.
     @Override
     public void onBookClick(Book book) {
         // Open BookDetailFragment using a fragment transaction.
