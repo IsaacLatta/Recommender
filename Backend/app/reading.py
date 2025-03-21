@@ -255,3 +255,26 @@ def list_recommendations():
     except Exception as e:
         current_app.logger.error(f"Error in list_recommendations: {e}")
         return jsonify({"success": False, "error": "Server error"}), 500
+
+@reading_bp.route('/reading/group/members', methods=['GET'])
+def list_group_members():
+    user_id = get_current_user()
+    if not user_id:
+        return jsonify({"success": False, "error": "Invalid token"}), 401
+
+    group_id = request.args.get("q")
+    if not group_id:
+        return jsonify({"success": False, "error": "q is required"}), 400
+
+    try:
+        query = """
+            SELECT u.user_id, u.username
+            FROM reading_group_members rgm
+            JOIN users u ON rgm.user_id = u.user_id
+            WHERE rgm.group_id = %s
+        """
+        members = run_query(query, (group_id,))
+        return jsonify({"success": True, "members": members}), 200
+    except Exception as e:
+        current_app.logger.error(f"Error in list_group_members: {e}")
+        return jsonify({"success": False, "error": "Server error"}), 500
