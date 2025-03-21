@@ -184,7 +184,7 @@ def list_books():
             return jsonify({"success": True, "books": []}), 200
 
         results = fetch_from_google(rows, extra_fields=["rating"])
-        return jsonify({"success": True, "books": results}), 200
+        return jsonify({"success": True, "items": results}), 200
 
     except Exception as e:
         current_app.logger.error(f"Error in list_books: {e}")
