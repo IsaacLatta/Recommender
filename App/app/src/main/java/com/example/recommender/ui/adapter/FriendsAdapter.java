@@ -2,17 +2,14 @@ package com.example.recommender.ui.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;          // <-- IMPORTANT: needed for onCreateViewHolder
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;     // <-- IMPORTANT: for @NonNull annotation
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.recommender.Controller;
-import com.example.recommender.R;       // <-- Make sure R is imported from your package
+import com.example.recommender.R;
 import com.example.recommender.model.entity.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,12 +50,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendsV
 
     static class FriendsViewHolder extends RecyclerView.ViewHolder {
         TextView tvFriendName;
-        Button btnRemoveFriend;
+        ImageButton btnRemoveFriend;
 
         public FriendsViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            tvFriendName    = itemView.findViewById(R.id.tvFriendName);
+            tvFriendName = itemView.findViewById(R.id.tvFriendName);
             btnRemoveFriend = itemView.findViewById(R.id.btnRemoveFriend);
         }
 
