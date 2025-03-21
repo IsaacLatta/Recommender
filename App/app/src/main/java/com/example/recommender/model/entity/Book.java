@@ -35,6 +35,9 @@ public class Book implements Serializable {
     @SerializedName("status")
     private String status;
 
+    @SerializedName("thumbnail")
+    private String thumbnail;
+
     public String getTitle() {
         return title;
     }
@@ -57,4 +60,8 @@ public class Book implements Serializable {
     public Integer getSuggestedBy() {return suggestedBy;}
 
     public String getStatus() {return status;}
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
 }

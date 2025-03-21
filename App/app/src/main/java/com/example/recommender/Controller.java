@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.recommender.model.response.BasicResponse;
 import com.example.recommender.model.response.BookResponse;
+import com.example.recommender.model.response.GroupInfo;
 import com.example.recommender.model.response.GroupListResponse;
+import com.example.recommender.model.response.GroupMembersResponse;
 import com.example.recommender.model.response.LoginResponse;
 import com.example.recommender.model.entity.Store;
 import com.example.recommender.model.entity.User;
@@ -41,7 +43,6 @@ public class Controller extends ViewModel {
         return instance;
     }
 
-    // Make constructor private so no one can do new Controller()
     private Controller() {
         API api = new API(BuildConfig.API_KEY, BuildConfig.API_STAGE);
         friendService   = new FriendsService(api);
@@ -298,7 +299,6 @@ public class Controller extends ViewModel {
             Log.e("READING_GROUP", "No JWT token available.");
             return;
         }
-//        ensureReadingService();
         readingService.joinGroup(token, groupId, new ReadingService.ReadingCallback<BasicResponse>() {
             @Override
             public void onSuccess(BasicResponse response) {
@@ -486,6 +486,38 @@ public class Controller extends ViewModel {
             @Override
             public void onFailure(Exception e) {
                 Log.e("GROUP_LIST", "Failed to list user groups", e);
+            }
+        });
+    }
+
+    public void listGroupMembers(int groupId) {
+        String token = Store.getInstance().getToken();
+        if (token == null || token.isEmpty()) {
+            Log.e("GROUP_MEMBERS", "No JWT token available.");
+            return;
+        }
+        ensureReadingService();
+        readingService.listGroupMembers(token, groupId, new ReadingService.ReadingCallback<GroupMembersResponse>() {
+            @Override
+            public void onSuccess(GroupMembersResponse response) {
+                if (response.isSuccess()) {
+                    Log.d("GROUP_MEMBERS", "Found " + response.getMembers().size() + " members.");
+                    List<GroupInfo> groups = Store.getInstance().getJoinedGroups();
+                    if (groups != null) {
+                        for (GroupInfo group : groups) {
+                            if (group.getGroupId() == groupId) {
+                                group.setMembers(response.getMembers());
+                                break;
+                            }
+                        }
+                    }
+                    Store.getInstance().notifyListeners();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("GROUP_MEMBERS", "Failed to load group members", e);
             }
         });
     }

@@ -26,7 +26,6 @@ public class GroupsFragment extends Fragment {
         tabLayout = view.findViewById(R.id.grouptab_layout);
         viewPager2 = view.findViewById(R.id.view_pager);
 
-        // Set up ViewPager with the adapter
         groupsViewPagerAdapter = new GroupsViewPagerAdapter(this);
         viewPager2.setAdapter(groupsViewPagerAdapter);
 

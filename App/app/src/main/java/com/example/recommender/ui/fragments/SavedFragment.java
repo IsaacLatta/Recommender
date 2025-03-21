@@ -28,10 +28,9 @@ public class SavedFragment extends Fragment implements StoreListener, BookClickL
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the saved fragment layout
         View view = inflater.inflate(R.layout.fragment_saved, container, false);
         rvSavedBooks = view.findViewById(R.id.rvSavedBooks);
-        adapter = new BookSearchAdapter(savedBooks, this); // Pass this fragment as the BookClickListener
+        adapter = new BookSearchAdapter(savedBooks, this);
         rvSavedBooks.setLayoutManager(new LinearLayoutManager(getContext()));
         rvSavedBooks.setAdapter(adapter);
         return view;
@@ -40,9 +39,7 @@ public class SavedFragment extends Fragment implements StoreListener, BookClickL
     @Override
     public void onResume() {
         super.onResume();
-        // Register to receive store updates
         Store.getInstance().addListener(this);
-        // Optionally trigger an update from the server for saved books
         Controller.getInstance().listSavedBooks();
     }
 
@@ -66,7 +63,6 @@ public class SavedFragment extends Fragment implements StoreListener, BookClickL
 
     @Override
     public void onBookClick(Book book) {
-        // Open BookDetailFragment using a fragment transaction.
         BookDetailFragment detailFragment = BookDetailFragment.newInstance(book);
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.flFragment, detailFragment)

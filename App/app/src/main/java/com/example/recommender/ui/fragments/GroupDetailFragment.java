@@ -32,7 +32,6 @@ public class GroupDetailFragment extends Fragment {
     private RecyclerView rvGroupMembers;
     private GroupBooksAdapter groupBooksAdapter;
     private GroupMembersAdapter groupMembersAdapter;
-    private boolean isAdmin = false;
 
     public static GroupDetailFragment newInstance(int groupId) {
         GroupDetailFragment fragment = new GroupDetailFragment();
@@ -56,16 +55,13 @@ public class GroupDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Inflate the detail layout (fragment_group_detail.xml)
         View view = inflater.inflate(R.layout.fragment_group_detail, container, false);
         rvGroupBooks = view.findViewById(R.id.rvGroupBooks);
         rvGroupMembers = view.findViewById(R.id.rvGroupMembers);
 
-        // Set up RecyclerViews
         rvGroupBooks.setLayoutManager(new LinearLayoutManager(getContext()));
         rvGroupMembers.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-        // Pass groupId to the adapters (admin flag will be set after retrieving group info)
         groupBooksAdapter = new GroupBooksAdapter(new ArrayList<>(), groupId);
         groupMembersAdapter = new GroupMembersAdapter(new ArrayList<>(), groupId);
 
@@ -78,21 +74,13 @@ public class GroupDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Request updated recommended books for this group.
-        if(groupId != -1) {
-            Controller.getInstance().listGroupRecommendations(groupId);
-        }
-        // For group members, if not available from API, we simulate with dummy data.
-        List<User> members = new ArrayList<>();
-        if(members.isEmpty()) {
-            members.add(new User(1, "Alice"));
-            members.add(new User(2, "Bob"));
-            members.add(new User(3, "Charlie"));
-        }
-        groupMembersAdapter.updateData(members);
-
-        // Listen for store updates
         Store.getInstance().addListener(this::refreshData);
+
+        if (groupId != -1) {
+            Controller.getInstance().listGroupRecommendations(groupId);
+            Controller.getInstance().listGroupMembers(groupId);
+        }
+
         refreshData();
     }
 
@@ -104,20 +92,20 @@ public class GroupDetailFragment extends Fragment {
 
     private void refreshData() {
         List<Book> recommendedBooks = new ArrayList<>();
-        String groupRole = "";
+        List<User> members = new ArrayList<>();
         List<GroupInfo> joinedGroups = Store.getInstance().getJoinedGroups();
-        if(joinedGroups != null) {
+        if (joinedGroups != null) {
             for (GroupInfo group : joinedGroups) {
-                if(group.getGroupId() == groupId) {
-                    recommendedBooks = group.getRecommendedBooks();
-                    groupRole = group.getRole();
+                if (group.getGroupId() == groupId) {
+                    recommendedBooks = group.getRecommendedBooks() != null ? group.getRecommendedBooks() : new ArrayList<>();
+                    members = group.getMembers() != null ? group.getMembers() : new ArrayList<>();
                     break;
                 }
             }
         }
-        isAdmin = "admin".equalsIgnoreCase(groupRole);
-        groupBooksAdapter.setIsAdmin(isAdmin);
-        groupMembersAdapter.setIsAdmin(isAdmin);
+        Log.d("GroupDetailFragment", "Recommended books count: " + recommendedBooks.size());
+        Log.d("GroupDetailFragment", "Group members count: " + members.size());
         groupBooksAdapter.updateData(recommendedBooks);
+        groupMembersAdapter.updateData(members);
     }
 }

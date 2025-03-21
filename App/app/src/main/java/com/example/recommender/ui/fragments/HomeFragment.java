@@ -32,18 +32,15 @@ public class HomeFragment extends Fragment implements StoreListener, BookClickLi
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the updated layout (fragment_home.xml)
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         etBookSearch = view.findViewById(R.id.etBookSearch);
         btnSearchBook = view.findViewById(R.id.btnSearchBook);
         rvSearchResults = view.findViewById(R.id.rvSearchResults);
 
-        // Set up RecyclerView with adapter, passing 'this' as the BookClickListener
         adapter = new BookSearchAdapter(books, this);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
         rvSearchResults.setAdapter(adapter);
 
-        // Set click listener for search button
         btnSearchBook.setOnClickListener(v -> {
             String query = etBookSearch.getText().toString().trim();
             if (!query.isEmpty()) {
@@ -59,18 +56,15 @@ public class HomeFragment extends Fragment implements StoreListener, BookClickLi
     @Override
     public void onResume() {
         super.onResume();
-        // Register to receive updates from the Store
         Store.getInstance().addListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        // Unregister the listener to avoid leaks
         Store.getInstance().removeListener(this);
     }
 
-    // Called whenever the Store notifies its listeners
     @Override
     public void onStoreUpdated() {
         List<Book> searchedBooks = Store.getInstance().getSearchedBooks();
@@ -83,12 +77,8 @@ public class HomeFragment extends Fragment implements StoreListener, BookClickLi
         }
     }
 
-    // Implementation of the BookClickListener method
     @Override
     public void onBookClick(Book book) {
-        // Open the detailed view for the selected book.
-        // For example, perform a fragment transaction to replace the current fragment.
-        // This example assumes you have a container with id flFragment in your MainScreen activity.
         BookDetailFragment detailFragment = BookDetailFragment.newInstance(book);
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.flFragment, detailFragment)

@@ -4,16 +4,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;  // Import ImageView
 import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.bumptech.glide.Glide;
 import com.example.recommender.Controller;
 import com.example.recommender.R;
 import com.example.recommender.model.entity.Book;
 import com.example.recommender.ui.fragments.BookClickListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class BookSearchAdapter extends RecyclerView.Adapter<BookSearchAdapter.Bo
     }
 
     public void updateData(List<Book> newBooks) {
-        this.books = newBooks != null ? newBooks : new ArrayList<>();
+        this.books = (newBooks != null) ? newBooks : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -55,6 +55,7 @@ public class BookSearchAdapter extends RecyclerView.Adapter<BookSearchAdapter.Bo
         TextView tvTitle, tvAuthors;
         RatingBar ratingBar;
         ImageButton btnView, btnSave;
+        ImageView ivBookCover; // Reference to the ImageView
 
         public BookViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,29 +64,29 @@ public class BookSearchAdapter extends RecyclerView.Adapter<BookSearchAdapter.Bo
             ratingBar = itemView.findViewById(R.id.ratingBar);
             btnView = itemView.findViewById(R.id.btnViewBook);
             btnSave = itemView.findViewById(R.id.btnSaveBook);
+            ivBookCover = itemView.findViewById(R.id.ivBookCover); // Bind the ImageView
         }
 
         public void bind(Book book) {
             tvTitle.setText(book.getTitle());
-            if(book.getAuthors() != null) {
+            if (book.getAuthors() != null) {
                 tvAuthors.setText(android.text.TextUtils.join(", ", book.getAuthors()));
             } else {
                 tvAuthors.setText("Unknown Author");
             }
-            if(book.getRating() != null)
-                ratingBar.setRating(book.getRating());
-            else
-                ratingBar.setRating(0);
+            ratingBar.setRating(book.getRating() != null ? book.getRating() : 0);
 
-            // Instead of calling Controller.openBookView, we invoke the callback.
+            Glide.with(itemView.getContext())
+                    .load(book.getThumbnail())
+                    .placeholder(R.drawable.ic_book_placeholder)
+                    .into(ivBookCover);
+
             btnView.setOnClickListener(v -> {
-                if(bookClickListener != null) {
+                if (bookClickListener != null) {
                     bookClickListener.onBookClick(book);
                 }
             });
-
             btnSave.setOnClickListener(v -> {
-                // Keep your save logic; you may call Controller.saveOrRateBook here.
                 Controller.getInstance().saveOrRateBook(book.getExternalId(), "save", null);
             });
         }

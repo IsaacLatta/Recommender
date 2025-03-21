@@ -9,6 +9,7 @@ import com.example.recommender.model.request.JoinGroupRequest;
 import com.example.recommender.model.request.PromoteMemberRequest;
 import com.example.recommender.model.request.RecommendBookRequest;
 import com.example.recommender.model.response.GroupListResponse;
+import com.example.recommender.model.response.GroupMembersResponse;
 import com.example.recommender.model.response.SearchGroupsResponse;
 
 import retrofit2.Call;
@@ -75,5 +76,11 @@ public interface ReadingApi {
             @Header("x-api-key") String apiKey
     );
 
+    @GET("reading/group/members")
+    Call<GroupMembersResponse> listGroupMembers(
+            @Header("Authorization") String auth,
+            @Query("q") Integer groupId,
+            @Header("x-api-key") String apiKey
+    );
 
 }

@@ -9,6 +9,7 @@ import com.example.recommender.model.request.JoinGroupRequest;
 import com.example.recommender.model.request.PromoteMemberRequest;
 import com.example.recommender.model.request.RecommendBookRequest;
 import com.example.recommender.model.response.GroupListResponse;
+import com.example.recommender.model.response.GroupMembersResponse;
 import com.example.recommender.model.response.SearchGroupsResponse;
 import com.example.recommender.network.api.API;
 import com.example.recommender.network.api.ReadingApi;
@@ -189,9 +190,23 @@ public class ReadingService {
         });
     }
 
-//    public interface ReadingCallback {
-//        void onSuccess(BasicResponse response);
-//        void onFailure(Exception e);
-//    }
+    public void listGroupMembers(String jwtToken, int groupId, final ReadingCallback<GroupMembersResponse> callback) {
+        String authHeader = "Bearer " + jwtToken;
+        Call<GroupMembersResponse> call = readingApi.listGroupMembers(authHeader, groupId, api.getKey());
+        call.enqueue(new Callback<GroupMembersResponse>() {
+            @Override
+            public void onResponse(Call<GroupMembersResponse> call, Response<GroupMembersResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(new Exception("List group members failed with code: " + response.code()));
+                }
+            }
 
+            @Override
+            public void onFailure(Call<GroupMembersResponse> call, Throwable t) {
+                callback.onFailure(new Exception(t));
+            }
+        });
+    }
 }

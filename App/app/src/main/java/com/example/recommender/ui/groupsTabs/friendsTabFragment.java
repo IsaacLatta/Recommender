@@ -33,7 +33,6 @@ public class friendsTabFragment extends Fragment implements StoreListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the updated friends tab layout without friend requests
         View view = inflater.inflate(R.layout.fragment_friends_tab, container, false);
 
         etFriendSearch = view.findViewById(R.id.etFriendSearch);

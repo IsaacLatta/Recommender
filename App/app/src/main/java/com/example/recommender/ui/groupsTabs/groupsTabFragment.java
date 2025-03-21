@@ -73,7 +73,6 @@ public class groupsTabFragment extends Fragment implements StoreListener {
         });
 
         fabCreateGroup.setOnClickListener(v -> {
-            // Show a dialog to enter the group title
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Create Group");
             final EditText input = new EditText(getContext());
