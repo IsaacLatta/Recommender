@@ -160,6 +160,7 @@ public class Controller extends ViewModel {
             public void onSuccess(FriendRequestsResponse response) {
                 if (response.getRequests() != null) {
                     Store.getInstance().setFriendRequests(response.getRequests());
+                    Store.getInstance().notifyListeners();
                     Log.d("FRIEND_REQ", "Pending requests: " + Store.getInstance().getFriendRequests().size());
                 }
             }

@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.recommender.ui.fragments.GroupsFragment;
 import com.example.recommender.ui.groupsTabs.friendsTabFragment;
 import com.example.recommender.ui.groupsTabs.groupsTabFragment;
-import com.example.recommender.ui.groupsTabs.requestTabFragment;
+import com.example.recommender.ui.groupsTabs.RequestTabFragment;
 
 public class GroupsViewPagerAdapter extends FragmentStateAdapter {
 
@@ -24,7 +24,7 @@ public class GroupsViewPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return new friendsTabFragment();
             case 2:
-                return new requestTabFragment();
+                return new RequestTabFragment();
             default:
                 return new groupsTabFragment();
         }
