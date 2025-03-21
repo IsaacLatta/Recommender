@@ -1,9 +1,12 @@
 package com.example.recommender.model.entity;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 import java.util.List;
 
-public class Book {
+public class Book implements Serializable {
+
+    private static final long serialVersionUID = 1L; // recommended for Serializable classes
 
     @SerializedName("external_id")
     private String external_id;
@@ -51,7 +54,7 @@ public class Book {
 
     public Integer getRating() {return rating;}
 
-    public Integer getSuggestedBy() {return rating;}
+    public Integer getSuggestedBy() {return suggestedBy;}
 
     public String getStatus() {return status;}
 }
