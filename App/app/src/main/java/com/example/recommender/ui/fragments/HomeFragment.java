@@ -18,11 +18,10 @@ import com.example.recommender.model.entity.Book;
 import com.example.recommender.model.entity.Store;
 import com.example.recommender.model.entity.StoreListener;
 import com.example.recommender.ui.adapter.BookSearchAdapter;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements StoreListener {
+public class HomeFragment extends Fragment implements StoreListener, BookClickListener {
 
     private EditText etBookSearch;
     private Button btnSearchBook;
@@ -39,8 +38,8 @@ public class HomeFragment extends Fragment implements StoreListener {
         btnSearchBook = view.findViewById(R.id.btnSearchBook);
         rvSearchResults = view.findViewById(R.id.rvSearchResults);
 
-        // Set up RecyclerView with adapter
-        adapter = new BookSearchAdapter(books);
+        // Set up RecyclerView with adapter, passing 'this' as the BookClickListener
+        adapter = new BookSearchAdapter(books, this);
         rvSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
         rvSearchResults.setAdapter(adapter);
 
@@ -82,5 +81,18 @@ public class HomeFragment extends Fragment implements StoreListener {
             adapter.updateData(new ArrayList<>());
             Log.d("HOME_SEARCH", "No books found, clearing adapter.");
         }
+    }
+
+    // Implementation of the BookClickListener method
+    @Override
+    public void onBookClick(Book book) {
+        // Open the detailed view for the selected book.
+        // For example, perform a fragment transaction to replace the current fragment.
+        // This example assumes you have a container with id flFragment in your MainScreen activity.
+        BookDetailFragment detailFragment = BookDetailFragment.newInstance(book);
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.flFragment, detailFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

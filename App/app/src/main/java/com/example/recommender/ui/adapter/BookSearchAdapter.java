@@ -8,21 +8,27 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.recommender.Controller;
 import com.example.recommender.R;
 import com.example.recommender.model.entity.Book;
+import com.example.recommender.ui.fragments.BookClickListener;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class BookSearchAdapter extends RecyclerView.Adapter<BookSearchAdapter.BookViewHolder> {
 
     private List<Book> books;
+    private BookClickListener bookClickListener;
 
-    public BookSearchAdapter(List<Book> books) {
-        this.books = books;
+    public BookSearchAdapter(List<Book> books, BookClickListener listener) {
+        this.books = (books != null) ? books : new ArrayList<>();
+        this.bookClickListener = listener;
     }
 
     public void updateData(List<Book> newBooks) {
-        this.books = newBooks;
+        this.books = newBooks != null ? newBooks : new ArrayList<>();
         notifyDataSetChanged();
     }
 
@@ -42,10 +48,10 @@ public class BookSearchAdapter extends RecyclerView.Adapter<BookSearchAdapter.Bo
 
     @Override
     public int getItemCount() {
-        return books != null ? books.size() : 0;
+        return books.size();
     }
 
-    static class BookViewHolder extends RecyclerView.ViewHolder {
+    class BookViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvAuthors;
         RatingBar ratingBar;
         ImageButton btnView, btnSave;
@@ -61,24 +67,25 @@ public class BookSearchAdapter extends RecyclerView.Adapter<BookSearchAdapter.Bo
 
         public void bind(Book book) {
             tvTitle.setText(book.getTitle());
-            if(book.getAuthors() != null)
+            if(book.getAuthors() != null) {
                 tvAuthors.setText(android.text.TextUtils.join(", ", book.getAuthors()));
-            else
+            } else {
                 tvAuthors.setText("Unknown Author");
-
-            // Set rating if available
+            }
             if(book.getRating() != null)
                 ratingBar.setRating(book.getRating());
             else
                 ratingBar.setRating(0);
 
-            // Wire up view button to open a detailed book view (implement this in your Controller or Fragment)
+            // Instead of calling Controller.openBookView, we invoke the callback.
             btnView.setOnClickListener(v -> {
-//                Controller.getInstance().openBookView(book);
+                if(bookClickListener != null) {
+                    bookClickListener.onBookClick(book);
+                }
             });
 
-            // Wire up save button to call the save or rate endpoint
             btnSave.setOnClickListener(v -> {
+                // Keep your save logic; you may call Controller.saveOrRateBook here.
                 Controller.getInstance().saveOrRateBook(book.getExternalId(), "save", null);
             });
         }

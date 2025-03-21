@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MyOrangeRatingBar" parent="@style/Widget.AppCompat.RatingBar">
+        <!-- Orange for filled stars -->
+        <item name="android:progressTint">@color/orange</item>
+        <item name="android:progressTintMode">src_in</item>
+
+        <!-- Optionally, also use orange for partially filled stars -->
+        <item name="android:secondaryProgressTint">@color/orange</item>
+        <item name="android:secondaryProgressTintMode">src_in</item>
+
+        <!-- Gray for the empty stars -->
+        <item name="android:progressBackgroundTint">@android:color/darker_gray</item>
+        <item name="android:progressBackgroundTintMode">src_in</item>
+
+        <!-- Prevent splitting the track on certain devices -->
+        <item name="android:splitTrack">false</item>
+    </style>
+</resources>
