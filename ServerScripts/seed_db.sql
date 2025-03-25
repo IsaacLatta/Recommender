@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS reading_groups CASCADE;
 DROP TABLE IF EXISTS friendships CASCADE;
 DROP TABLE IF EXISTS friend_requests CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS user_books CASCADE;
 
 -- ==================================
 -- Create tables
@@ -123,12 +124,28 @@ INSERT INTO reading_group_members (group_id, user_id, role) VALUES
 
 -- INSERT INTO reading_list (group_id, external_id, suggested_by, status)
 -- VALUES (1, 'GB_RECOMMEND_ID', 1, 'pending');
+
+-- Fiction
 INSERT INTO reading_list (group_id, external_id, suggested_by, status)
-VALUES (1, 'afCxg5sogvAC', 2, 'approve');
+VALUES (3, 'ZcAlEAAAQBAJ', 2, 'approve');
 INSERT INTO reading_list (group_id, external_id, suggested_by, status)
-VALUES (1, '7nDPUjKVDHcC', 1, 'deny');
+VALUES (3, 'aWZzLPhY4o0C', 1, 'approve');
 INSERT INTO reading_list (group_id, external_id, suggested_by, status)
-VALUES (1, '12D6DwAAQBAJ', 1, 'pending');
+VALUES (3, 'AgthzgEACAAJ', 1, 'pending');
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (3, 'ARpoAwAAQBAJ', 1, 'pending');
+
+-- Sci-Fi
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, 'EjWuDQAAQBAJ', 1, 'approve');
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, 'Yw86EAAAQBAJ', 1, 'pending');
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, 'TGDIDwAAQBAJ', 1, 'pending');
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, 'TuveDwAAQBAJ', 2, 'approve');
+INSERT INTO reading_list (group_id, external_id, suggested_by, status)
+VALUES (1, 'GdgeAAAAQBAJ', 2, 'approve');
 
 -- Friendships
 INSERT INTO friendships (user_id, friend_id)
@@ -141,14 +158,20 @@ VALUES
 INSERT INTO friend_requests (sender_id, receiver_id, status)
 VALUES (4, 1, 'pending');
 
-INSERT INTO user_books (user_id, external_id, saved, rating)
-VALUES (1, 'GB_HITCHHIKERS_GUIDE', true, NULL);
-INSERT INTO user_books (user_id, external_id, saved, rating)
-VALUES (1, 'GB_SAMPLE_BOOK', TRUE, 4);
+-- INSERT INTO user_books (user_id, external_id, saved, rating)
+-- VALUES (1, 'GB_HITCHHIKERS_GUIDE', true, NULL);
+-- INSERT INTO user_books (user_id, external_id, saved, rating)
+-- VALUES (1, 'GB_SAMPLE_BOOK', TRUE, 4);
 INSERT INTO user_books (user_id, external_id, saved, rating)
 VALUES (1, 'dpy3CwAAQBAJ', TRUE, 3);
 INSERT INTO user_books (user_id, external_id, saved, rating)
 VALUES (1, 'tNClBwAAQBAJ', TRUE, 4);
 INSERT INTO user_books (user_id, external_id, saved, rating)
 VALUES (1, 'mJHhEAAAQBAJ', TRUE, 4);
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'Yw86EAAAQBAJ', TRUE, 3);
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'TGDIDwAAQBAJ', TRUE, 4);
+INSERT INTO user_books (user_id, external_id, saved, rating)
+VALUES (1, 'TuveDwAAQBAJ', TRUE, 4);
 
