@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
 public class BackendTest {
+
     @Test
     public void testLogin() throws InterruptedException {
         Controller controller = Controller.getInstance();
@@ -39,7 +40,7 @@ public class BackendTest {
     @Test
     public void testBookSearch() throws InterruptedException {
         Controller controller = Controller.getInstance();
-
+        controller.login("alice", "password123");
         CountDownLatch latch =  new CountDownLatch(1);
 
         String search_query = "harry potter";
