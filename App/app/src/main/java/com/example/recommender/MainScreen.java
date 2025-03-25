@@ -43,7 +43,6 @@ public class MainScreen extends AppCompatActivity {
             }
             return true;
         });
-
     }
 
     private void setCurrentFragment(Fragment fragment) {
