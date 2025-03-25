@@ -120,12 +120,10 @@ public class groupsTabFragment extends Fragment implements StoreListener {
     }
 
     public void openGroupDetails(int groupId) {
-        com.example.recommender.ui.groupsTabs.GroupDetailFragment detailFragment = com.example.recommender.ui.groupsTabs.GroupDetailFragment.newInstance(groupId);
+        com.example.recommender.ui.fragments.GroupDetailFragment detailFragment = com.example.recommender.ui.fragments.GroupDetailFragment.newInstance(groupId);
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.flFragment, detailFragment)
                 .addToBackStack(null)
                 .commit();
     }
-
-
 }

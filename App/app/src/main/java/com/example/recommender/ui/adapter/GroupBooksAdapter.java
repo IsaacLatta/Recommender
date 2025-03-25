@@ -43,9 +43,8 @@ public class GroupBooksAdapter extends RecyclerView.Adapter<GroupBooksAdapter.Bo
     @NonNull
     @Override
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the updated layout (item_group_book.xml)
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_book, parent, false);
-        return new BookViewHolder(view);
+        return new BookViewHolder(view, this);
     }
 
     @Override
@@ -63,13 +62,14 @@ public class GroupBooksAdapter extends RecyclerView.Adapter<GroupBooksAdapter.Bo
         TextView tvTitle, tvAuthors, tvStatus;
         ImageButton btnApprove, btnDeny;
         View adminButtonsLayout;
+        GroupBooksAdapter adapter;  // reference to adapter
 
-        public BookViewHolder(@NonNull View itemView) {
+        public BookViewHolder(@NonNull View itemView, GroupBooksAdapter adapter) {
             super(itemView);
+            this.adapter = adapter;
             tvTitle = itemView.findViewById(R.id.tvBookTitle);
             tvAuthors = itemView.findViewById(R.id.tvBookAuthors);
             tvStatus = itemView.findViewById(R.id.tvBookStatus);
-            // New admin controls
             adminButtonsLayout = itemView.findViewById(R.id.adminButtonsLayout);
             btnApprove = itemView.findViewById(R.id.btnApprove);
             btnDeny = itemView.findViewById(R.id.btnDeny);
@@ -88,9 +88,15 @@ public class GroupBooksAdapter extends RecyclerView.Adapter<GroupBooksAdapter.Bo
                 adminButtonsLayout.setVisibility(View.VISIBLE);
                 btnApprove.setOnClickListener(v -> {
                     Controller.getInstance().handleBookRecommendation(groupId, book.getExternalId(), true);
+                    tvStatus.setText("Approved");
                 });
                 btnDeny.setOnClickListener(v -> {
-                    Controller.getInstance().handleBookRecommendation(groupId, book.getExternalId(), false);
+                    int pos = getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        Controller.getInstance().handleBookRecommendation(groupId, book.getExternalId(), false);
+                        adapter.books.remove(pos);
+                        adapter.notifyItemRemoved(pos);
+                    }
                 });
             } else {
                 adminButtonsLayout.setVisibility(View.GONE);

@@ -1,4 +1,4 @@
-package com.example.recommender.ui.groupsTabs;
+package com.example.recommender.ui.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -93,19 +93,28 @@ public class GroupDetailFragment extends Fragment {
     private void refreshData() {
         List<Book> recommendedBooks = new ArrayList<>();
         List<User> members = new ArrayList<>();
+        boolean isAdmin = false;
         List<GroupInfo> joinedGroups = Store.getInstance().getJoinedGroups();
         if (joinedGroups != null) {
             for (GroupInfo group : joinedGroups) {
                 if (group.getGroupId() == groupId) {
                     recommendedBooks = group.getRecommendedBooks() != null ? group.getRecommendedBooks() : new ArrayList<>();
                     members = group.getMembers() != null ? group.getMembers() : new ArrayList<>();
+                    if (group.getRole() != null && group.getRole().equalsIgnoreCase("admin")) {
+                        isAdmin = true;
+                    }
                     break;
                 }
             }
         }
         Log.d("GroupDetailFragment", "Recommended books count: " + recommendedBooks.size());
         Log.d("GroupDetailFragment", "Group members count: " + members.size());
+
+        groupBooksAdapter.setIsAdmin(isAdmin);
+        groupMembersAdapter.setIsAdmin(isAdmin);
         groupBooksAdapter.updateData(recommendedBooks);
         groupMembersAdapter.updateData(members);
     }
+
+
 }

@@ -29,6 +29,10 @@ public class GroupInfo {
     @SerializedName("members")
     private List<User> members;
 
+    // New field for admin IDs. This field should be provided by the backend JSON response.
+    @SerializedName("admin_ids")
+    private List<Integer> adminIds;
+
     public int getGroupId() {
         return groupId;
     }
@@ -60,7 +64,24 @@ public class GroupInfo {
     public List<User> getMembers() {
         return members;
     }
+
     public void setMembers(List<User> members) {
         this.members = members;
+    }
+
+    public List<Integer> getAdminIds() {
+        return adminIds;
+    }
+
+    public void setAdminIds(List<Integer> adminIds) {
+        this.adminIds = adminIds;
+    }
+
+    public boolean isAdmin(int userId) {
+        if (adminIds != null && !adminIds.isEmpty()) {
+            return adminIds.contains(userId);
+        }
+        // Fallback: assume the creator is the sole admin
+        return userId == createdBy;
     }
 }

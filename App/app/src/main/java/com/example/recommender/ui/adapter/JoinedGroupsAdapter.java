@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.recommender.R;
 import com.example.recommender.model.response.GroupInfo;
-import com.example.recommender.ui.groupsTabs.GroupDetailFragment;
+import com.example.recommender.ui.fragments.GroupDetailFragment;
 import com.example.recommender.ui.groupsTabs.groupsTabFragment;
 
 import java.util.ArrayList;

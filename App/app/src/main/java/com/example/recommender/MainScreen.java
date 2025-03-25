@@ -46,9 +46,6 @@ public class MainScreen extends AppCompatActivity {
 
     }
 
-    // Helper method to switch fragments in the container
-
-
     private void setCurrentFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.flFragment, fragment)
